@@ -1,0 +1,86 @@
+﻿@{
+    ViewData["Title"] = "Главная";
+}
+
+<div class="container">
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">Меню</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav">
+                    <li class="nav-item"><a class="nav-link" href="#catalog">Каталог</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#popular">Популярные товары</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#contact">Контакты</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div id="carouselExample" class="carousel slide mt-3" data-bs-ride="carousel">
+        <div class="carousel-inner">
+            <div class="carousel-item active">
+				<img src="~/assets/01banner_xiaomi14t.jpg" class="d-block w-100" alt="Слайд 1">
+            </div>
+            <div class="carousel-item">
+                <img src="~/assets/3_planschety.jpg" class="d-block w-100" alt="Слайд 2">
+            </div>
+            <div class="carousel-item">
+                <img src="~/assets/4_staylery.jpg" class="d-block w-100" alt="Слайд 1">
+            </div>
+            <div class="carousel-item">
+                <img src="~/assets/shopbeltelecomby_redminote14.jpg" class="d-block w-100" alt="Слайд 1">
+            </div>
+        </div>
+        <button class="carousel-control-prev" type="button" data-bs-target="#carouselExample" data-bs-slide="prev">
+            <span class="carousel-control-prev-icon"></span>
+        </button>
+        <button class="carousel-control-next" type="button" data-bs-target="#carouselExample" data-bs-slide="next">
+            <span class="carousel-control-next-icon"></span>
+        </button>
+    </div>
+
+    <section id="popular" class="my-5">
+        <h2>Популярные товары</h2>
+        <div class="row">
+            <div class="col-md-3">
+                <div class="card">
+                    <img src="/images/product1.jpg" class="card-img-top" alt="Товар 1">
+                    <div class="card-body">
+                        <h5 class="card-title">Название товара</h5>
+                        <p class="card-text">Цена: 100 руб.</p>
+                        <a href="#" class="btn btn-primary">Подробнее</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="catalog" class="my-5">
+        <h2>Каталог товаров</h2>
+        <a href="/Catalog" class="btn btn-primary">Перейти в каталог</a>
+    </section>
+
+    <section id="contact" class="my-5">
+        <h2>Обратная связь</h2>
+        <form>
+            <div class="mb-3">
+                <label for="name" class="form-label">Имя</label>
+                <input type="text" class="form-control" id="name">
+            </div>
+            <div class="mb-3">
+                <label for="email" class="form-label">Email</label>
+                <input type="email" class="form-control" id="email">
+            </div>
+            <div class="mb-3">
+                <label for="message" class="form-label">Сообщение</label>
+                <textarea class="form-control" id="message" rows="3"></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary">Отправить</button>
+        </form>
+    </section>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
