@@ -1,4 +1,5 @@
 ﻿using Beltelecom.Models;
+using Microsoft.AspNetCore.Identity;
 using System;
 using System.ComponentModel.DataAnnotations;
 
@@ -9,7 +10,7 @@ public class Cart
 
     // Связь с пользователем, который владеет корзиной
     public int UserId { get; set; }
-    public User User { get; set; }
+    public IdentityUser IdentityUser { get; set; }
 
     // Дата создания корзины
     public DateTime CreatedAt { get; set; } = DateTime.Now;

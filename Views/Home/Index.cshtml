@@ -1,4 +1,5 @@
-﻿@{
+﻿@model IEnumerable<Beltelecom.Models.Product>
+@{
     ViewData["Title"] = "Главная";
 }
 
@@ -44,10 +45,10 @@
 
     <section id="popular" class="my-5">
         <h2>Популярные товары</h2>
-        <div class="row">
+        @* <div class="row">
             <div class="col-md-3">
                 <div class="card">
-                    <img src="/images/product1.jpg" class="card-img-top" alt="Товар 1">
+                    <img src="/images/samsungTV.jpg" class="card-img-top" alt="Товар 1">
                     <div class="card-body">
                         <h5 class="card-title">Название товара</h5>
                         <p class="card-text">Цена: 100 руб.</p>
@@ -55,6 +56,22 @@
                     </div>
                 </div>
             </div>
+        </div> *@
+        <div class="row">
+            @foreach (var product in Model)
+            {
+                <div class="col-md-3">
+                    <div class="card">
+                        <img src="@product.ImageUrl" class="card-img-top" alt="@product.Name">
+                        <div class="card-body">
+                            <h5 class="card-title">@product.Name</h5>
+                            <p class="card-text">@product.Description</p>
+                            <p class="card-text">Цена: @product.Price руб.</p>
+                            <a href="#" class="btn btn-primary">Подробнее</a>
+                        </div>
+                    </div>
+                </div>
+            }
         </div>
     </section>
 

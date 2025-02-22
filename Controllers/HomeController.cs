@@ -1,21 +1,29 @@
 using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 using Beltelecom.Models;
+using Beltelecom.Data;
+using Microsoft.EntityFrameworkCore;
 
 namespace Beltelecom.Controllers;
 
 public class HomeController : Controller
 {
     private readonly ILogger<HomeController> _logger;
+    private readonly ApplicationDbContext _context;  // Добавляем контекст для работы с базой данных
 
-    public HomeController(ILogger<HomeController> logger)
+    public HomeController(ILogger<HomeController> logger, ApplicationDbContext context)
     {
         _logger = logger;
+        _context = context;  // Инициализируем контекст
     }
 
-    public IActionResult Index()
+    public async Task<IActionResult> Index()
     {
-        return View();
+        // Извлекаем список продуктов из базы данных
+        var products = await _context.Products.ToListAsync();
+
+        // Передаем данные о продуктах в представление
+        return View(products);
     }
 
     public IActionResult Privacy()
@@ -28,4 +36,5 @@ public class HomeController : Controller
     {
         return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
     }
+
 }

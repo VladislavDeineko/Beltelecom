@@ -13,9 +13,48 @@ html {
 }
 
 html {
-  position: relative;
-  min-height: 100%;
+    position: relative;
+    height: 100%;
 }
 
 body {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+}
+
+footer {
+    margin-top: auto;
+}
+
+.navbar-sticky {
+    position: sticky; 
+    top: 0;
+    z-index: 1030; /* Убедитесь, что меню находится поверх остальных элементов */
+    width: 100%;
+}
+
+.row {
+    margin-top: 20px;
+}
+
+.card {
+    background-color: #212529;
+    color: white;
+    border-bottom-left-radius: 25px; /* Радиус для нижнего левого угла */
+    border-bottom-right-radius: 25px; /* Радиус для нижнего правого угла */
+    overflow: hidden; /* Для предотвращения выхода содержимого за границы */
+}
+
+.card-img-top {
+    padding: 10px;
+    background-color: white;
+}
+
+.card-body {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+
 }
