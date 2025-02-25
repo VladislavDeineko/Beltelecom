@@ -1,0 +1,22 @@
+﻿@model IEnumerable<Beltelecom.Models.Category>
+
+<section id="catalog" class="my-5">
+    <h2>Каталог товаров</h2>
+    <div class="row">
+        @foreach (var category in Model.Select((cat, index) => new { cat, index }))
+        {
+            if (category.index % 3 == 0)
+            {
+                @:<div class="w-100"></div>
+            }
+            <div class="col-md-4 mb-4">
+                <a href="/Catalog?categoryId=@category.cat.Id" class="text-decoration-none">
+                    <div class="category-card">
+                        <img src="@category.cat.ImageUrl" alt="@category.cat.Name">
+                        <div class="category-title">@category.cat.Name</div>
+                    </div>
+                </a>
+            </div>
+        }
+    </div>
+</section>

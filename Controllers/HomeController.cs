@@ -19,12 +19,25 @@ public class HomeController : Controller
 
     public async Task<IActionResult> Index()
     {
-        // Извлекаем список продуктов из базы данных
-        var products = await _context.Products.ToListAsync();
+        // Извлекаем 4 товара с наименьшим количеством на складе
+        var products = await _context.Products
+                                     .OrderBy(p => p.Stock)
+                                     .Take(4)
+                                     .ToListAsync();
 
-        // Передаем данные о продуктах в представление
-        return View(products);
+        // Извлекаем все категории (или другие данные, которые вам нужны)
+        var categories = await _context.Categories.ToListAsync();
+
+        // Создаем HomeViewModel
+        var model = new HomeViewModel
+        {
+            Products = products,
+            Categories = categories
+        };
+
+        return View(model);
     }
+
 
     public IActionResult Privacy()
     {
@@ -35,6 +48,21 @@ public class HomeController : Controller
     public IActionResult Error()
     {
         return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+    }
+
+    public IActionResult Categories()
+    {
+        return RedirectToAction("Index", "Categories");
+    }
+
+    public async Task<IActionResult> GetLowStockProducts()
+    {
+        var products = await _context.Products
+                                     .OrderBy(p => p.Stock) // Сортируем по количеству
+                                     .Take(4) // Берем 4 товара
+                                     .ToListAsync();
+
+        return PartialView("_ProductsPartial", products);
     }
 
 }

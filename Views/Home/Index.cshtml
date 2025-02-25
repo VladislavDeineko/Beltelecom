@@ -1,4 +1,4 @@
-﻿@model IEnumerable<Beltelecom.Models.Product>
+﻿@model Beltelecom.Models.HomeViewModel
 @{
     ViewData["Title"] = "Главная";
 }
@@ -45,40 +45,11 @@
 
     <section id="popular" class="my-5">
         <h2>Популярные товары</h2>
-        @* <div class="row">
-            <div class="col-md-3">
-                <div class="card">
-                    <img src="/images/samsungTV.jpg" class="card-img-top" alt="Товар 1">
-                    <div class="card-body">
-                        <h5 class="card-title">Название товара</h5>
-                        <p class="card-text">Цена: 100 руб.</p>
-                        <a href="#" class="btn btn-primary">Подробнее</a>
-                    </div>
-                </div>
-            </div>
-        </div> *@
-        <div class="row">
-            @foreach (var product in Model)
-            {
-                <div class="col-md-3">
-                    <div class="card">
-                        <img src="@product.ImageUrl" class="card-img-top" alt="@product.Name">
-                        <div class="card-body">
-                            <h5 class="card-title">@product.Name</h5>
-                            <p class="card-text">@product.Description</p>
-                            <p class="card-text">Цена: @product.Price руб.</p>
-                            <a href="#" class="btn btn-primary">Подробнее</a>
-                        </div>
-                    </div>
-                </div>
-            }
-        </div>
+        <partial name="_ProductsPartial" model="Model.Products" />
+
     </section>
 
-    <section id="catalog" class="my-5">
-        <h2>Каталог товаров</h2>
-        <a href="/Catalog" class="btn btn-primary">Перейти в каталог</a>
-    </section>
+    <partial name="_CategoriesPartial" model="Model.Categories" />
 
     <section id="contact" class="my-5">
         <h2>Обратная связь</h2>
