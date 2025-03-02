@@ -10,7 +10,8 @@
                 @:<div class="w-100"></div>
             }
             <div class="col-md-4 mb-4">
-                <a href="/Catalog?categoryId=@category.cat.Id" class="text-decoration-none">
+                <!-- Обновляем ссылку для передачи параметра category в контроллер -->
+                <a href="/Catalog?category=@category.cat.Name" class="text-decoration-none">
                     <div class="category-card">
                         <img src="@category.cat.ImageUrl" alt="@category.cat.Name">
                         <div class="category-title">@category.cat.Name</div>

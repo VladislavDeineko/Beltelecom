@@ -1,0 +1,22 @@
+﻿@model Beltelecom.Models.Product
+
+<link rel="stylesheet" href="~/css/product-details.css">
+
+<div class="product-container">
+    <div class="product-image">
+        <img src="@Model.ImageUrl" alt="@Model.Name">
+    </div>
+    <div class="product-info">
+        <h1 class="product-title">@Model.Name</h1>
+
+        <p class="product-monthly-payment">@((Model.Price / Model.InstallmentMonths).ToString("0.00")) руб.</p>
+        <p class="product-installment-text">Ежемесячный платеж на @Model.InstallmentMonths мес.</p>
+
+        <p class="product-description">@Model.Description</p>
+
+        <p class="product-price">Цена: @Model.Price руб.</p>
+        <p class="product-warranty">Гарантия: @Model.WarrantyMonths мес.</p>
+
+        <button class="add-to-cart">Добавить в корзину</button>
+    </div>
+</div>

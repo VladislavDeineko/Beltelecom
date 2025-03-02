@@ -18,6 +18,8 @@ public class ApplicationDbContext : IdentityDbContext<IdentityUser>
     public DbSet<Cart> Carts { get; set; }
     public DbSet<CartItem> CartItems { get; set; }
     public DbSet<IdentityRole> Roles { get; set; }
+    public DbSet<Order> Orders { get; set; }
+
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -48,6 +50,10 @@ public class ApplicationDbContext : IdentityDbContext<IdentityUser>
         modelBuilder.Entity<Product>()
             .Property(p => p.Price)
             .HasColumnType("decimal(10,2)");  // 10 - общее количество цифр, 2 - количество цифр после запятой
+
+        modelBuilder.Entity<Order>()
+            .Property(o => o.TotalAmount)
+            .HasColumnType("decimal(10,2)");
 
         base.OnModelCreating(modelBuilder);  // Вызов базового метода для выполнения любых дополнительных настроек
     }

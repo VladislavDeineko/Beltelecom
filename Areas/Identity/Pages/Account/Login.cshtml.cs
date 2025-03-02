@@ -128,7 +128,7 @@ namespace Beltelecom.Areas.Identity.Pages.Account
                 }
                 else
                 {
-                    ModelState.AddModelError(string.Empty, "Invalid login attempt.");
+                    ModelState.AddModelError(string.Empty, "Ошибка входа.");
                     return Page();
                 }
             }

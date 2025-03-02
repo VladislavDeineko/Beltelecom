@@ -1,0 +1,14 @@
+﻿@model Beltelecom.Models.ProfileViewModel
+
+@{
+    ViewData["Title"] = "Личный кабинет";
+}
+
+<h2>Личный кабинет</h2>
+<div class="profile_card">
+    <img src="/images/profile-user.png" alt="Alternate Text" />
+    <p><strong>Электронная почта:</strong> @Model.Email</p>
+    <p><strong>Номер телефона:</strong> @Model.PhoneNum</p>
+</div>
+<a class="btn btn-primary mt-3" asp-area="Identity" asp-page="/Account/Manage/Index">Изменить данные</a>
+<a class="btn btn-danger mt-3" asp-action="Logout">Выйти</a>

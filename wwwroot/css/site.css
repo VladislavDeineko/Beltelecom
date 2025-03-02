@@ -1,3 +1,10 @@
+:root {
+    --primary-red: #d9534f;
+    --primary-dark: #333;
+    --primary-gray: #777;
+    --button-hover: #b03a2e;
+}
+
 html {
   font-size: 14px;
 }
@@ -51,10 +58,15 @@ footer {
     height: 100%;
 }
 
-.card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-}
+    .card a {
+        background-color: var(--primary-red);
+        border-color: var(--primary-red);
+    }
+
+    .card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    }
 
 .card img {
 
@@ -97,7 +109,7 @@ footer {
     background-color: #f8f9fa; /* Светлый фон */
     transition: transform 0.3s ease, box-shadow 0.3s ease;
     cursor: pointer;
-    border: 1px solid;
+    border: 1px solid var(--primary-red);
 }
 
 .category-card:hover {
@@ -115,11 +127,219 @@ footer {
 .category-title {
     height: 20%;
     width: 100%;
-    background-color: #007bff; /* Синий фон */
+    background-color: var(--primary-red);
     color: white;
     font-size: 18px;
     font-weight: bold;
     display: flex;
     align-items: center;
     justify-content: center;
+}
+
+.profile_card {
+    background-color: #007BFF; /* Синий фон */
+    color: white; /* Белый текст */
+    border-radius: 8px; /* Закругленные углы */
+    padding: 20px; /* Отступы внутри карточки */
+    width: 300px; /* Ширина карточки */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Тень для эффекта */
+    margin-top: 20px;
+}
+
+.profile_card h4 {
+    text-align: center;
+    margin-bottom: 15px;
+}
+
+.profile_card img {
+    display: block;
+    margin: 0 auto 15px; /* Центрирование изображения */
+    width: 80px; /* Ширина изображения */
+    height: 80px; /* Высота изображения */
+    border-radius: 50%; /* Круглая форма изображения */
+    border: 2px solid white; /* Белая рамка вокруг изображения */
+}
+
+.profile_card p {
+    font-size: 16px;
+    line-height: 1.5;
+}
+
+.profile_card strong {
+    font-weight: bold;
+}
+
+/* Общая стилизация контейнера каталога */
+.catalog-container {
+    display: flex;
+    gap: 30px;
+    margin-top: 20px;
+}
+
+/* Стили для блока фильтров */
+.filters {
+    width: 250px;
+    padding: 20px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    background-color: #f9f9f9;
+}
+
+/* Стили для каждого фильтра */
+.filter-item {
+    margin-bottom: 20px;
+}
+
+    .filter-item label {
+        display: block;
+        font-weight: bold;
+        margin-bottom: 8px;
+    }
+
+    .filter-item select {
+        width: 100%;
+        padding: 8px;
+        border-radius: 4px;
+        border: 1px solid #ccc;
+        font-size: 13px;
+    }
+
+/* Стили для блока с товарами */
+.products {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+}
+
+/* Стили для карточки товара */
+.product-card {
+    border: 1px solid #ddd;
+    padding: 10px;
+    border-radius: 8px;
+    text-align: center;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+    .product-card img {
+        max-width: 100%;
+        height: auto;
+        margin-bottom: 10px;
+    }
+
+    .product-card h4 {
+        font-size: 16px;
+        margin: 10px 0;
+    }
+
+    .product-card p {
+        font-size: 14px;
+        color: #333;
+    }
+
+    .product-card button {
+        background-color: var(--primary-red);
+        color: white;
+        border: none;
+        padding: 8px 15px;
+        border-radius: 4px;
+        cursor: pointer;
+    }
+
+.product-card button:hover {
+    background-color: #0056b3;
+}
+
+.monthly-payment {
+    font-size: 22px;
+    font-weight: bold;
+    color: var(--primary-red);
+    margin-bottom: 0px;
+}
+
+.installment-text {
+    font-size: 14px;
+    color: #6c757d;
+}
+
+.warranty,
+.installment {
+    font-size: 14px;
+    color: #28a745;
+}
+
+/*ProductDetails*/
+.product-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 40px;
+    max-width: 1200px;
+    margin: 50px auto;
+    padding: 20px;
+}
+
+.product-image img {
+    width: 400px;
+    height: auto;
+    border-radius: 10px;
+    box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+.product-info {
+    max-width: 500px;
+}
+
+.product-title {
+    font-size: 28px;
+    font-weight: bold;
+    color: var(--primary-dark);
+    margin-bottom: 10px;
+}
+
+.product-monthly-payment {
+    font-size: 22px;
+    font-weight: bold;
+    color: var(--primary-red);
+    margin-bottom: 0px;
+}
+
+.product-installment-text {
+    font-size: 16px;
+    color: var(--primary-gray);
+    margin-bottom: 15px;
+}
+
+.product-description {
+    font-size: 16px;
+    color: var(--primary-dark);
+    line-height: 1.5;
+    margin-bottom: 15px;
+}
+
+.product-price {
+    font-size: 20px;
+    font-weight: bold;
+    color: var(--primary-dark);
+    margin-bottom: 10px;
+}
+
+.product-warranty {
+    font-size: 16px;
+    color: var(--primary-gray);
+    margin-bottom: 20px;
+}
+
+.add-to-cart {
+    background: var(--primary-red);
+    color: white;
+    font-size: 18px;
+    padding: 12px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.add-to-cart:hover {
+    background: var(--button-hover);
 }

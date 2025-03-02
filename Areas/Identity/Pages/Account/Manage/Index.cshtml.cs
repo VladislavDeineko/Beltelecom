@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Beltelecom.Areas.Identity.Pages.Account.Manage
 {
@@ -55,8 +56,12 @@ namespace Beltelecom.Areas.Identity.Pages.Account.Manage
             ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
             ///     directly from your code. This API may change or be removed in future releases.
             /// </summary>
+            [Required]
+            [Display(Name = "Username")]
+            public string Username { get; set; }
+
             [Phone]
-            [Display(Name = "Phone number")]
+            [Display(Name = "PhoneNumber")]
             public string PhoneNumber { get; set; }
         }
 
@@ -65,10 +70,9 @@ namespace Beltelecom.Areas.Identity.Pages.Account.Manage
             var userName = await _userManager.GetUserNameAsync(user);
             var phoneNumber = await _userManager.GetPhoneNumberAsync(user);
 
-            Username = userName;
-
             Input = new InputModel
             {
+                Username = userName,
                 PhoneNumber = phoneNumber
             };
         }
@@ -95,9 +99,29 @@ namespace Beltelecom.Areas.Identity.Pages.Account.Manage
 
             if (!ModelState.IsValid)
             {
+                foreach (var error in ModelState.Values.SelectMany(v => v.Errors))
+                {
+                    Console.WriteLine($"Ошибка валидации: {error.ErrorMessage}");
+                }
                 await LoadAsync(user);
                 return Page();
             }
+
+            //// Обновление имени пользователя
+            //if (Input.Username != user.UserName)
+            //{
+            //    var setUserNameResult = await _userManager.SetUserNameAsync(user, Input.Username);
+            //    if (!setUserNameResult.Succeeded)
+            //    {
+            //        foreach (var error in setUserNameResult.Errors)
+            //        {
+            //            ModelState.AddModelError(string.Empty, error.Description);
+            //            Console.WriteLine($"Ошибка изменения имени пользователя: {error.Description}");
+            //        }
+            //        //StatusMessage = "Ошибка при изменении имени пользователя.";
+            //        return RedirectToPage();
+            //    }
+            //}
 
             var phoneNumber = await _userManager.GetPhoneNumberAsync(user);
             if (Input.PhoneNumber != phoneNumber)
@@ -105,13 +129,17 @@ namespace Beltelecom.Areas.Identity.Pages.Account.Manage
                 var setPhoneResult = await _userManager.SetPhoneNumberAsync(user, Input.PhoneNumber);
                 if (!setPhoneResult.Succeeded)
                 {
-                    StatusMessage = "Unexpected error when trying to set phone number.";
+                    foreach (var error in setPhoneResult.Errors)
+                    {
+                        ModelState.AddModelError(string.Empty, error.Description);
+                    }
+                    //StatusMessage = "Ошибка при изменении номера телефона пользователя.";
                     return RedirectToPage();
                 }
             }
-
+            await _userManager.UpdateAsync(user);
             await _signInManager.RefreshSignInAsync(user);
-            StatusMessage = "Your profile has been updated";
+            StatusMessage = "Ваш профиль обновлён";
             return RedirectToPage();
         }
     }

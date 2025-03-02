@@ -3,16 +3,20 @@
 <div class="row">
     @foreach (var product in Model)
     {
+        var monthlyPayment = product.InstallmentMonths > 0 ? product.Price / product.InstallmentMonths : product.Price;
         <div class="col-md-3">
             <div class="card">
                 <img src="@product.ImageUrl" class="card-img-top" alt="@product.Name">
                 <img src="/images/hit.png" class="badge-hit" alt="Хит">
                 <div class="card-body">
                     <h5 class="card-title">@product.Name</h5>
+                    <p class="monthly-payment"><strong>@monthlyPayment.ToString("F2") руб.</strong></p>
+                    <p class="installment-text">Ежемесячный платеж на @product.InstallmentMonths мес.</p>
                     <p class="card-text">@product.Description</p>
-                    <p class="card-text">Цена: @product.Price руб.</p>
+                    <p class="card-text"><strong>Цена: </strong>@product.Price руб.</p>
                     <p class="card-text">На складе: @product.Stock</p>
-                    <a href="#" class="btn btn-primary">Подробнее</a>
+                    <p class="warranty"><strong>Гарантия:</strong> @product.WarrantyMonths мес.</p>
+                    <a href="@Url.Action("Details", "Products", new { id = product.Id })" class="btn btn-primary">Подробнее</a>
                 </div>
             </div>
         </div>

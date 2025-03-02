@@ -1,0 +1,60 @@
+﻿@model CatalogViewModel
+
+<h2>Каталог товаров</h2>
+
+<div class="catalog-container">
+    <!-- Фильтры -->
+    <aside class="filters">
+        <h4>Фильтры</h4>
+        <form method="get">
+            <!-- Категория -->
+            <div class="filter-item">
+                <label>Категории:</label>
+                <select name="category" onchange="this.form.submit()">
+                    <option value="">Все</option>
+                    @foreach (var category in Model.Categories)
+                    {
+                        <option value="@category" selected="@(Model.SelectedCategory == category)">@category</option>
+                    }
+                </select>
+            </div>
+
+            <!-- Бренды -->
+            <div class="filter-item">
+                <label>Бренды:</label>
+                <select name="brand" onchange="this.form.submit()">
+                    <option value="">Все</option>
+                    @foreach (var brand in Model.Brands)
+                    {
+                        <option value="@brand" selected="@(Model.SelectedBrand == brand)">@brand</option>
+                    }
+                </select>
+            </div>
+
+            <!-- Сортировка -->
+            <div class="filter-item">
+                <h4>Сортировка</h4>
+                <select name="sortOrder" onchange="this.form.submit()">
+                    <option value="">Без сортировки</option>
+                    <option value="price_asc" selected="@(Model.SortOrder == "price_asc")">Цена: по возрастанию</option>
+                    <option value="price_desc" selected="@(Model.SortOrder == "price_desc")">Цена: по убыванию</option>
+                    <option value="name_asc" selected="@(Model.SortOrder == "name_asc")">Название: А-Я</option>
+                    <option value="name_desc" selected="@(Model.SortOrder == "name_desc")">Название: Я-А</option>
+                </select>
+            </div>
+        </form>
+    </aside>
+
+    <!-- Продукты -->
+    <div class="products">
+        @foreach (var product in Model.Products)
+        {
+            <div class="product-card">
+                <img src="@product.ImageUrl" alt="@product.Name" />
+                <h4>@product.Name</h4>
+                <p>@product.Price руб.</p>
+                <button>Купить</button>
+            </div>
+        }
+    </div>
+</div>

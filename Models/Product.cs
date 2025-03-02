@@ -31,7 +31,8 @@ namespace Beltelecom.Models
         public Brand Brand { get; set; }
 
         public string? ImageUrl { get; set; }
-
+        public int WarrantyMonths { get; set; } // Гарантия в месяцах
+        public int InstallmentMonths { get; set; } // Рассрочка в месяцах
         public DateTime CreatedAt { get; set; }
     }
 }
