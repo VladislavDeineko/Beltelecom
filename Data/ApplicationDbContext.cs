@@ -15,10 +15,9 @@ public class ApplicationDbContext : IdentityDbContext<IdentityUser>
     public DbSet<Product> Products { get; set; }
     public DbSet<Category> Categories { get; set; }
     public DbSet<Brand> Brands { get; set; }
-    public DbSet<Cart> Carts { get; set; }
-    public DbSet<CartItem> CartItems { get; set; }
     public DbSet<IdentityRole> Roles { get; set; }
-    public DbSet<Order> Orders { get; set; }
+    public DbSet<UserAddress> UserAddresses { get; set; }
+    public DbSet<UserDealInfo> UserDealInfos { get; set; }
 
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -40,23 +39,10 @@ public class ApplicationDbContext : IdentityDbContext<IdentityUser>
             .Property(p => p.CategoryId)
             .IsRequired();
 
-        // Связь между товаром в корзине и корзиной (One-to-Many)
-        modelBuilder.Entity<CartItem>()
-            .HasOne(ci => ci.Cart)  // Товар в корзине связан с одной корзиной
-            .WithMany(c => c.CartItems)  // Корзина может содержать много товаров
-            .HasForeignKey(ci => ci.CartId)  // Внешний ключ для связи — это CartId в таблице CartItem
-            .OnDelete(DeleteBehavior.Cascade);  // Каскадное удаление: при удалении корзины, все её товары удаляются
-
         modelBuilder.Entity<Product>()
             .Property(p => p.Price)
             .HasColumnType("decimal(10,2)");  // 10 - общее количество цифр, 2 - количество цифр после запятой
 
-        modelBuilder.Entity<Order>()
-            .Property(o => o.TotalAmount)
-            .HasColumnType("decimal(10,2)");
-
         base.OnModelCreating(modelBuilder);  // Вызов базового метода для выполнения любых дополнительных настроек
     }
-
-
 }

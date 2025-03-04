@@ -53,7 +53,10 @@
                 <img src="@product.ImageUrl" alt="@product.Name" />
                 <h4>@product.Name</h4>
                 <p>@product.Price руб.</p>
-                <button>Купить</button>
+                <div class="warranty"><strong> Гарантия:</strong> @product.WarrantyMonths месяцев</div>
+                <a href="@Url.Action("Details", "Products", new { id = product.Id })">
+                    <button>Купить</button>
+                </a>
             </div>
         }
     </div>

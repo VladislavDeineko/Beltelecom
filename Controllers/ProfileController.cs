@@ -39,20 +39,6 @@ namespace Beltelecom.Controllers
             return View(model);
         }
 
-        // Получение списка покупок
-        public async Task<IActionResult> Orders()
-        {
-            var user = await _userManager.GetUserAsync(User);
-            if (user == null) return RedirectToAction("Login", "Account");
-
-            var orders = await _context.Orders
-                .Where(o => o.UserId == user.Id)
-                .OrderByDescending(o => o.OrderDate)
-                .ToListAsync();
-
-            return View(orders);
-        }
-
         // Выход из аккаунта
         public async Task<IActionResult> Logout()
         {
