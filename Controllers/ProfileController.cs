@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿    using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -29,14 +29,115 @@ namespace Beltelecom.Controllers
             var user = await _userManager.GetUserAsync(User);
             if (user == null) return RedirectToAction("Login", "Account");
 
+            var userAddress = await _context.UserAddresses.FirstOrDefaultAsync(u => u.UserId == user.Id);
+            var userDealInfo = await _context.UserDealInfos.FirstOrDefaultAsync(u => u.UserId == user.Id);
+
+            if (userDealInfo == null)
+            {
+                // Если записи нет, можно создать новую или отобразить информацию пользователю
+                userDealInfo = new UserDealInfo
+                {
+                    UserId = user.Id,
+                    PhoneNumber = user.PhoneNumber // Возможно, вы хотите добавить телефон при создании
+                };
+            }
+
             var model = new ProfileViewModel
             {
                 UserName = user.UserName,
                 Email = user.Email,
-                PhoneNum = user.PhoneNumber
+                PhoneNum = user.PhoneNumber,
+                UserAddress = userAddress ?? new UserAddress(),
+                UserDealInfo = userDealInfo ?? new UserDealInfo()
             };
 
             return View(model);
+        }
+
+        // Сохранение адреса
+        [HttpPost]
+        public async Task<IActionResult> UpdateAddress(UserAddress userAddress)
+        {
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null) return RedirectToAction("Login", "Account");
+
+            var existingAddress = await _context.UserAddresses.FirstOrDefaultAsync(u => u.UserId == user.Id);
+            if (existingAddress == null)
+            {
+                userAddress.UserId = user.Id;
+                _context.UserAddresses.Add(userAddress);
+            }
+            else
+            {
+                existingAddress.Region = userAddress.Region;
+                existingAddress.City = userAddress.City;
+                existingAddress.Street = userAddress.Street;
+                existingAddress.House = userAddress.House;
+                existingAddress.Apartment = userAddress.Apartment;
+                _context.UserAddresses.Update(existingAddress);
+            }
+
+            try
+            {
+                await _context.SaveChangesAsync();
+                TempData["SuccessMessageAddress"] = "Адрес успешно обновлен.";
+            }
+            catch
+            {
+                TempData["ErrorMessageAddress"] = "Ошибка при сохранении адреса.";
+            }
+
+            return RedirectToAction("Index");
+        }
+
+        // Сохранение паспортных данных
+        [HttpPost]
+        public async Task<IActionResult> UpdateDealInfo(UserDealInfo userDealInfo)
+        {
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null) return RedirectToAction("Login", "Account");
+
+            var existingDealInfo = await _context.UserDealInfos.FirstOrDefaultAsync(u => u.UserId == user.Id);
+            if (existingDealInfo == null)
+            {
+                // Заполнение данных по умолчанию, если их нет
+                userDealInfo.UserId = user.Id;
+                userDealInfo.LastName = string.IsNullOrEmpty(userDealInfo.LastName) ? "Не указано" : userDealInfo.LastName;
+                userDealInfo.FirstName = string.IsNullOrEmpty(userDealInfo.FirstName) ? "Не указано" : userDealInfo.FirstName;
+                userDealInfo.MiddleName = string.IsNullOrEmpty(userDealInfo.MiddleName) ? "Не указано" : userDealInfo.MiddleName;
+                userDealInfo.PassportNumber = string.IsNullOrEmpty(userDealInfo.PassportNumber) ? "Не указано" : userDealInfo.PassportNumber;
+                userDealInfo.PassportIssuedBy = string.IsNullOrEmpty(userDealInfo.PassportIssuedBy) ? "Не указано" : userDealInfo.PassportIssuedBy;
+                userDealInfo.PersonalNumber = string.IsNullOrEmpty(userDealInfo.PersonalNumber) ? "Не указано" : userDealInfo.PersonalNumber;
+                userDealInfo.PhoneNumber = string.IsNullOrEmpty(userDealInfo.PhoneNumber) ? "Не указано" : userDealInfo.PhoneNumber;
+                _context.UserDealInfos.Add(userDealInfo);
+            }
+            else
+            {
+                // Заполнение данных по умолчанию для существующих данных
+                existingDealInfo.UserId = user.Id;
+                existingDealInfo.LastName = string.IsNullOrEmpty(userDealInfo.LastName) ? "Не указано" : userDealInfo.LastName;
+                existingDealInfo.FirstName = string.IsNullOrEmpty(userDealInfo.FirstName) ? "Не указано" : userDealInfo.FirstName;
+                existingDealInfo.MiddleName = string.IsNullOrEmpty(userDealInfo.MiddleName) ? "Не указано" : userDealInfo.MiddleName;
+                existingDealInfo.PassportNumber = string.IsNullOrEmpty(userDealInfo.PassportNumber) ? "Не указано" : userDealInfo.PassportNumber;
+                existingDealInfo.PassportIssuedBy = string.IsNullOrEmpty(userDealInfo.PassportIssuedBy) ? "Не указано" : userDealInfo.PassportIssuedBy;
+                existingDealInfo.PersonalNumber = string.IsNullOrEmpty(userDealInfo.PersonalNumber) ? "Не указано" : userDealInfo.PersonalNumber;
+                existingDealInfo.PhoneNumber = string.IsNullOrEmpty(userDealInfo.PhoneNumber) ? "Не указано" : userDealInfo.PhoneNumber;
+                existingDealInfo.PassportIssuedDate = userDealInfo.PassportIssuedDate;
+                existingDealInfo.PassportIssuedDate = userDealInfo.PassportIssuedDate;
+
+                _context.UserDealInfos.Update(existingDealInfo);
+            }
+
+            try
+            {
+                await _context.SaveChangesAsync();
+                TempData["SuccessMessageDeal"] = "Паспортные данные успешно обновлены.";
+            }
+            catch
+            {
+                TempData["ErrorMessageDeal"] = "Ошибка при сохранении паспортных данных.";
+            }
+            return RedirectToAction("Index");
         }
 
         // Выход из аккаунта

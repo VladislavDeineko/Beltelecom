@@ -18,6 +18,7 @@ public class ApplicationDbContext : IdentityDbContext<IdentityUser>
     public DbSet<IdentityRole> Roles { get; set; }
     public DbSet<UserAddress> UserAddresses { get; set; }
     public DbSet<UserDealInfo> UserDealInfos { get; set; }
+    public DbSet<Order> Orders { get; set; }
 
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)

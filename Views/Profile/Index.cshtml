@@ -5,10 +5,99 @@
 }
 
 <h2>Личный кабинет</h2>
-<div class="profile_card">
-    <img src="/images/profile-user.png" alt="Alternate Text" />
-    <p><strong>Электронная почта:</strong> @Model.Email</p>
-    <p><strong>Номер телефона:</strong> @Model.PhoneNum</p>
+
+<div class="profile-container">
+    <div class="profile-main">
+        <div class="profile_card">
+            <img src="/images/profile-user.png" alt="Profile Image" />
+            <p><strong>Электронная почта:</strong> @Model.Email</p>
+            <p><strong>Номер телефона:</strong> @Model.PhoneNum</p>
+        </div>
+        <a class="btn btn-red mt-3" asp-area="Identity" asp-page="/Account/Manage/Index">Изменить данные</a>
+        <a class="btn btn-danger mt-3" asp-action="Logout">Выйти</a>
+    </div> 
+
+
+    <div class="profile_form">
+        <h3>Адрес</h3>
+        <form asp-action="UpdateAddress" method="post">
+            <div class="form-floating mb-3">
+                <input type="text" name="Region" value="@Model.UserAddress?.Region" class="form-control" id="Region" />
+                <label for="Region">Область</label>
+            </div>
+            <div class="form-floating mb-3">
+                <input type="text" name="City" value="@Model.UserAddress?.City" class="form-control" id="City" />
+                <label for="City">Населённый пункт</label>
+            </div>
+            <div class="form-floating mb-3">
+                <input type="text" name="Street" value="@Model.UserAddress?.Street" class="form-control" id="Street" />
+                <label for="Street">Улица</label>
+            </div>
+            <div class="form-floating mb-3">
+                <input type="text" name="House" value="@Model.UserAddress?.House" class="form-control" id="House" />
+                <label for="House">Дом</label>
+            </div>
+            <div class="form-floating mb-3">
+                <input type="text" name="Apartment" value="@Model.UserAddress?.Apartment" class="form-control" id="Apartment" />
+                <label for="Apartment">Квартира</label>
+            </div>
+            <button type="submit" class="btn btn-primary">Сохранить</button>
+            @if (TempData["SuccessMessageAddress"] != null)
+            {
+                <div class="alert alert-success">@TempData["SuccessMessageAddress"]</div>
+            }
+            @if (TempData["ErrorMessageAddress"] != null)
+            {
+                <div class="alert alert-danger">@TempData["ErrorMessageAddress"]</div>
+            }
+        </form>
+    </div>
+
+    <div class="profile_form">
+        <h3>Паспортные данные</h3>
+        <form asp-action="UpdateDealInfo" method="post">
+            <div class="form-floating mb-3">
+                <input type="text" name="LastName" value="@Model.UserDealInfo?.LastName" class="form-control" id="LastName" />
+                <label for="LastName">Фамилия</label>
+            </div>
+            <div class="form-floating mb-3">
+                <input type="text" name="FirstName" value="@Model.UserDealInfo?.FirstName" class="form-control" id="FirstName" />
+                <label for="FirstName">Имя</label>
+            </div>
+            <div class="form-floating mb-3">
+                <input type="text" name="MiddleName" value="@Model.UserDealInfo?.MiddleName" class="form-control" id="MiddleName" />
+                <label for="MiddleName">Отчество</label>
+            </div>
+            <div class="form-floating mb-3">
+                <input type="text" name="PassportNumber" value="@Model.UserDealInfo?.PassportNumber" class="form-control" id="PassportNumber" />
+                <label for="PassportNumber">Серия и номер паспорта</label>
+            </div>
+            <div class="form-floating mb-3">
+                <input type="date" name="PassportIssuedDate" value="@Model.UserDealInfo?.PassportIssuedDate?.ToString("yyyy-MM-dd")" class="form-control" id="PassportIssuedDate" />
+                <label for="PassportIssuedDate">Дата выдачи</label>
+            </div>
+            <div class="form-floating mb-3">
+                <input type="text" name="PassportIssuedBy" value="@Model.UserDealInfo?.PassportIssuedBy" class="form-control" id="PassportIssuedBy" />
+                <label for="PassportIssuedBy">Кем выдан</label>
+            </div>
+            <div class="form-floating mb-3">
+                <input type="text" name="PersonalNumber" value="@Model.UserDealInfo?.PersonalNumber" class="form-control" id="PersonalNumber" />
+                <label for="PersonalNumber">Личный номер</label>
+            </div>
+            <div class="form-floating mb-3">
+                <input type="date" name="PassportExpiryDate" value="@Model.UserDealInfo?.PassportExpiryDate?.ToString("yyyy-MM-dd")" class="form-control" id="PassportExpiryDate" />
+                <label for="PassportExpiryDate">Дата окончания действия</label>
+            </div>
+            <button type="submit" class="btn btn-primary">Сохранить</button>
+            @if (TempData["SuccessMessageDeal"] != null)
+            {
+                <div class="alert alert-success">@TempData["SuccessMessageDeal"]</div>
+            }
+            @if (TempData["ErrorMessageDeal"] != null)
+            {
+                <div class="alert alert-danger">@TempData["ErrorMessageDeal"]</div>
+            }
+        </form>
+    </div>
+
 </div>
-<a class="btn btn-primary mt-3" asp-area="Identity" asp-page="/Account/Manage/Index">Изменить данные</a>
-<a class="btn btn-danger mt-3" asp-action="Logout">Выйти</a>

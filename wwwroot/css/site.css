@@ -136,37 +136,79 @@ footer {
     justify-content: center;
 }
 
+/*Личный кабинет
+*/
+.profile-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    background-color: #007bff; /* Синий фон */
+    padding: 20px;
+    border-radius: 10px;
+    color: white;
+}
+
 .profile_card {
-    background-color: #007BFF; /* Синий фон */
-    color: white; /* Белый текст */
-    border-radius: 8px; /* Закругленные углы */
-    padding: 20px; /* Отступы внутри карточки */
-    width: 300px; /* Ширина карточки */
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Тень для эффекта */
-    margin-top: 20px;
-}
-
-.profile_card h4 {
+    flex: 1;
+    max-width: 250px;
     text-align: center;
-    margin-bottom: 15px;
+    background: white;
+    padding: 15px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    color: black;
 }
 
-.profile_card img {
-    display: block;
-    margin: 0 auto 15px; /* Центрирование изображения */
-    width: 80px; /* Ширина изображения */
-    height: 80px; /* Высота изображения */
-    border-radius: 50%; /* Круглая форма изображения */
-    border: 2px solid white; /* Белая рамка вокруг изображения */
+    .profile_card img {
+        width: 100px;
+        height: 100px;
+        border-radius: 50%;
+        margin-bottom: 10px;
+    }
+
+.profile_form {
+    flex: 2;
+    max-width: 450px;
+    background: white;
+    padding: 15px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    color: black;
 }
 
-.profile_card p {
-    font-size: 16px;
-    line-height: 1.5;
+    .profile_form h3 {
+        text-align: center;
+        color: black;
+    }
+
+    .profile_form input {
+        width: 100%;
+        padding: 8px;
+        margin: 5px 0;
+        border-radius: 5px;
+        border: 1px solid #ccc;
+    }
+
+    .profile_form button,
+    .btn-red{
+        width: 100%;
+        padding: 10px;
+        background-color: var(--primary-red);
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        margin-bottom:5px;
+    }
+
+.profile_form button:hover,
+.btn-red:hover {
+    background-color: var(--button-hover);
+    color: white !important;
 }
 
-.profile_card strong {
-    font-weight: bold;
+.profile-main a {
+    margin-top: 7px !important;
 }
 
 /* Общая стилизация контейнера каталога */

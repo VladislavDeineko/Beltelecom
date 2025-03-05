@@ -40,7 +40,7 @@ namespace Beltelecom.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Brands", (string)null);
+                    b.ToTable("Brands");
                 });
 
             modelBuilder.Entity("Beltelecom.Models.Category", b =>
@@ -61,7 +61,49 @@ namespace Beltelecom.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Categories", (string)null);
+                    b.ToTable("Categories");
+                });
+
+            modelBuilder.Entity("Beltelecom.Models.Order", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("InstallmentMonths")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime>("OrderDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<decimal>("PaidAmount")
+                        .HasColumnType("decimal(10,2)");
+
+                    b.Property<int>("ProductId")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("RequiresSetup")
+                        .HasColumnType("bit");
+
+                    b.Property<decimal>("TotalAmount")
+                        .HasColumnType("decimal(10,2)");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProductId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Orders");
                 });
 
             modelBuilder.Entity("Beltelecom.Models.Product", b =>
@@ -110,7 +152,7 @@ namespace Beltelecom.Migrations
 
                     b.HasIndex("CategoryId");
 
-                    b.ToTable("Products", (string)null);
+                    b.ToTable("Products");
                 });
 
             modelBuilder.Entity("Beltelecom.Models.UserAddress", b =>
@@ -148,7 +190,7 @@ namespace Beltelecom.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("UserAddresses", (string)null);
+                    b.ToTable("UserAddresses");
                 });
 
             modelBuilder.Entity("Beltelecom.Models.UserDealInfo", b =>
@@ -171,14 +213,16 @@ namespace Beltelecom.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime>("PassportExpiryDate")
+                    b.Property<DateTime?>("PassportExpiryDate")
+                        .IsRequired()
                         .HasColumnType("datetime2");
 
                     b.Property<string>("PassportIssuedBy")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime>("PassportIssuedDate")
+                    b.Property<DateTime?>("PassportIssuedDate")
+                        .IsRequired()
                         .HasColumnType("datetime2");
 
                     b.Property<string>("PassportNumber")
@@ -201,7 +245,7 @@ namespace Beltelecom.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("UserDealInfos", (string)null);
+                    b.ToTable("UserDealInfos");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -400,6 +444,25 @@ namespace Beltelecom.Migrations
                     b.HasKey("UserId", "LoginProvider", "Name");
 
                     b.ToTable("AspNetUserTokens", (string)null);
+                });
+
+            modelBuilder.Entity("Beltelecom.Models.Order", b =>
+                {
+                    b.HasOne("Beltelecom.Models.Product", "Product")
+                        .WithMany()
+                        .HasForeignKey("ProductId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Product");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("Beltelecom.Models.Product", b =>
