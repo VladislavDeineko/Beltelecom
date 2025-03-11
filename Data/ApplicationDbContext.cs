@@ -19,7 +19,7 @@ public class ApplicationDbContext : IdentityDbContext<IdentityUser>
     public DbSet<UserAddress> UserAddresses { get; set; }
     public DbSet<UserDealInfo> UserDealInfos { get; set; }
     public DbSet<Order> Orders { get; set; }
-
+    public DbSet<Favorite> Favorites { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -46,4 +46,10 @@ public class ApplicationDbContext : IdentityDbContext<IdentityUser>
 
         base.OnModelCreating(modelBuilder);  // Вызов базового метода для выполнения любых дополнительных настроек
     }
+
+    //protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+    //{
+    //    base.OnConfiguring(optionsBuilder);
+    //    optionsBuilder.EnableSensitiveDataLogging(); // Включить логирование чувствительных данных
+    //}
 }

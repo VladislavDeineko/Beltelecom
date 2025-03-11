@@ -37,16 +37,6 @@ builder.Services.AddControllersWithViews();
 
 var app = builder.Build();
 
-//// **Применение миграций перед созданием пользователей и ролей**
-//using (var scope = app.Services.CreateScope())
-//{
-//    var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-//    context.Database.Migrate(); // Применяем миграции
-//}
-
-//// **Вызываем асинхронную инициализацию ролей и администратора**
-//await InitializeRolesAndAdminAsync(app.Services);
-
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {

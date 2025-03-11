@@ -18,5 +18,12 @@
         <p class="product-warranty">Гарантия: @Model.WarrantyMonths мес.</p>
 
         <button class="add-to-cart">Добавить в корзину</button>
+        @Html.AntiForgeryToken()
+        <button id="favorite-button"
+                class="favorite-button @(ViewBag.IsFavorite ? "favorite-active" : "")"
+                data-product-id="@Model.Id">
+            @(ViewBag.IsFavorite ? "Удалить из избранного" : "Добавить в избранное")
+        </button>
+
     </div>
 </div>

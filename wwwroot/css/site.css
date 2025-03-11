@@ -3,6 +3,7 @@
     --primary-dark: #333;
     --primary-gray: #777;
     --button-hover: #b03a2e;
+    --light-gray: #f0f0f0; 
 }
 
 html {
@@ -411,4 +412,72 @@ footer {
 
 .add-to-cart:hover {
     background: var(--button-hover);
+}
+
+.favorite-button {
+    background-color: #ff9800;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    font-size: 16px;
+    cursor: pointer;
+    border-radius: 5px;
+    transition: background-color 0.3s ease;
+}
+
+    .favorite-button:hover {
+        background-color: #e68900;
+    }
+
+.favorite-active {
+    background-color: #d32f2f;
+}
+
+    .favorite-active:hover {
+        background-color: #b71c1c;
+    }
+
+/*favorites*/
+.favorite-list {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.favorite-item {
+    display: flex;
+    align-items: center;
+    border: 1px solid #ddd;
+    padding: 10px;
+    border-radius: 5px;
+    width: 100%;
+}
+
+.favorite-image {
+    width: 100px;
+    height: 100px;
+    object-fit: contain;
+    margin-right: 15px;
+    border-radius: 5px;
+}
+
+.favorite-info {
+    flex: 1; /* Занимает всё оставшееся пространство */
+    background-color: var(--light-gray);
+    padding: 10px;
+    border-radius: 10px;
+}
+
+.favorite-info h3 {
+    margin: 0;
+}
+
+.favorite-info a {
+    text-decoration: none;
+    color: var(--primary-dark);
+}
+
+.favorite-info a:hover {
+    text-decoration: none;
+    color: black;
 }

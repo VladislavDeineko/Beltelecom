@@ -2,17 +2,19 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Beltelecom.Models;
+using Microsoft.AspNetCore.Identity;
 
 namespace Beltelecom.Controllers
 {
     public class ProductsController : Controller
     {
         private readonly ApplicationDbContext _context;
+        private readonly UserManager<IdentityUser> _userManager;
 
-        public ProductsController(ApplicationDbContext context)
+        public ProductsController(ApplicationDbContext context, UserManager<IdentityUser> userManager)
         {
             _context = context;
-
+            _userManager = userManager;
         }
 
         public async Task<IActionResult> Index()
@@ -83,8 +85,19 @@ namespace Beltelecom.Controllers
             {
                 return NotFound();
             }
+
+            var user = await _userManager.GetUserAsync(User);
+            if (user != null)
+            {
+                ViewBag.IsFavorite = await _context.Favorites
+                    .AnyAsync(f => f.UserId == user.Id && f.ProductId == id);
+            }
+            else
+            {
+                ViewBag.IsFavorite = false; // Если пользователь не авторизован, считаем, что товара нет в избранном
+            }
+
             return View(product);
         }
-
     }
 }
