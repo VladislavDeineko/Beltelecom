@@ -1,0 +1,39 @@
+﻿@model Beltelecom.Models.Product
+
+<h1>Редактировать товар</h1>
+
+<form asp-action="Edit">
+    <div class="form-group">
+        <label for="Name">Название</label>
+        <input type="text" class="form-control" id="Name" name="Name" value="@Model.Name" required />
+    </div>
+    <div class="form-group">
+        <label for="Price">Цена</label>
+        <input type="number" class="form-control" id="Price" name="Price" value="@Model.Price" required />
+    </div>
+    <div class="form-group">
+        <label for="CategoryId">Категория</label>
+        <select asp-for="CategoryId" class="form-control" asp-items="@(new SelectList(ViewData["Categories"] as IEnumerable<SelectListItem>, "Value", "Text"))" required>
+            <option value="">Выберите категорию</option>
+        </select>
+    </div>
+    <div class="form-group">
+        <label for="BrandId">Бренд</label>
+        <select asp-for="BrandId" class="form-control" asp-items="@(new SelectList(ViewData["Brands"] as IEnumerable<SelectListItem>, "Value", "Text"))" required>
+            <option value="">Выберите бренд</option>
+        </select>
+    </div>
+    <div class="form-group">
+        <label for="ImageUrl">Ссылка на изображение</label>
+        <input type="text" class="form-control" id="ImageUrl" name="ImageUrl" value="@Model.ImageUrl" />
+    </div>
+    <div class="form-group">
+        <label for="Description">Описание</label>
+        <textarea class="form-control" id="Description" name="Description">@Model.Description</textarea>
+    </div>
+    <div class="form-group">
+        <label for="WarrantyMonths">Гарантия (в месяцах)</label>
+        <input type="number" class="form-control" id="WarrantyMonths" name="WarrantyMonths" value="@Model.WarrantyMonths" />
+    </div>
+    <button type="submit" class="btn btn-success">Сохранить</button>
+</form>

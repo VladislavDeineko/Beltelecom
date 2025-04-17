@@ -3,27 +3,147 @@
 <link rel="stylesheet" href="~/css/product-details.css">
 
 <div class="product-container">
-    <div class="product-image">
-        <img src="@Model.ImageUrl" alt="@Model.Name">
+    <div class="product-top">
+        <div class="product-image">
+            <img src="@Model.ImageUrl" alt="@Model.Name">
+        </div>
+        <div class="product-info">
+            <h1 class="product-title">@Model.Name</h1>
+
+            <p class="product-monthly-payment">@((Model.Price / Model.InstallmentMonths).ToString("0.00")) руб.</p>
+            <p class="product-installment-text">Ежемесячный платеж на @Model.InstallmentMonths мес.</p>
+
+            <p class="product-description">@Model.Description</p>
+
+            <p class="product-price">Цена: @Model.Price руб.</p>
+            <p class="product-warranty">Гарантия: @Model.WarrantyMonths мес.</p>
+
+            <button class="add-to-cart">Оформить заказ</button>
+            @Html.AntiForgeryToken()
+            <button id="favorite-button"
+                    class="favorite-button @(ViewBag.IsFavorite ? "favorite-active" : "")"
+                    data-product-id="@Model.Id">
+                @(ViewBag.IsFavorite ? "Удалить из избранного" : "Добавить в избранное")
+            </button>
+        </div>
     </div>
-    <div class="product-info">
-        <h1 class="product-title">@Model.Name</h1>
-
-        <p class="product-monthly-payment">@((Model.Price / Model.InstallmentMonths).ToString("0.00")) руб.</p>
-        <p class="product-installment-text">Ежемесячный платеж на @Model.InstallmentMonths мес.</p>
-
-        <p class="product-description">@Model.Description</p>
-
-        <p class="product-price">Цена: @Model.Price руб.</p>
-        <p class="product-warranty">Гарантия: @Model.WarrantyMonths мес.</p>
-
-        <button class="add-to-cart">Добавить в корзину</button>
-        @Html.AntiForgeryToken()
-        <button id="favorite-button"
-                class="favorite-button @(ViewBag.IsFavorite ? "favorite-active" : "")"
-                data-product-id="@Model.Id">
-            @(ViewBag.IsFavorite ? "Удалить из избранного" : "Добавить в избранное")
-        </button>
-
+    <div class="product-specifications">
+        @if (Model.Specifications != null && Model.Specifications.Any())
+        {
+            <h3>Характеристики:</h3>
+            @foreach (var group in Model.Specifications
+           .GroupBy(s => s.Group))
+            {
+                <h4 class="spec-group">@group.Key</h4>
+                <ul class="product-specs">
+                    @foreach (var spec in group)
+                    {
+                        <li><strong>@spec.Name:</strong> @spec.Value</li>
+                    }
+                </ul>
+            }
+        }
     </div>
 </div>
+
+<!-- Модальное окно для оформления заказа -->
+<div id="orderModal" class="modal">
+    <div class="modal-content">
+        <span class="close">&times;</span>
+
+        <h2>Оформление заказа</h2>
+
+        <div class="product-info">
+            <img id="productImage" src="@Model.ImageUrl" alt="@Model.Name" style="max-width: 100px;">
+            <h3 id="productName">@Model.Name</h3>
+            <p id="productPrice">Цена: @Model.Price руб.</p>
+            <p id="installmentMonths">Срок рассрочки: @Model.InstallmentMonths мес.</p>
+        </div>
+
+        <div class="order-options">
+            <label for="requires-setup">Нужна настройка?</label>
+            <input type="checkbox" id="requires-setup">
+
+            <div id="phone-input-container">
+                <label for="userPhone">Номер телефона:</label>
+                <input type="text" id="userPhone" placeholder="Введите номер телефона">
+                <div id="missingPhoneWarning" style="color: red; display: none;">Пожалуйста, укажите номер телефона в личном кабинете.</div>
+            </div>
+
+            <button id="confirm-order" disabled>Подтвердить заказ</button>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const orderButton = document.querySelector(".add-to-cart");
+            const modal = document.getElementById("orderModal");
+            const closeButton = document.querySelector(".close");
+            const phoneInput = document.getElementById("userPhone");
+            const warning = document.getElementById("missingPhoneWarning");
+            const confirmButton = document.getElementById("confirm-order");
+
+            orderButton.addEventListener("click", async () => {
+                try {
+                    const response = await fetch('/Orders/GetUserPhone');
+                    const data = await response.json();
+
+                    if (data.phoneNumber) {
+                        phoneInput.value = data.phoneNumber;
+                        phoneInput.disabled = true;
+                        warning.style.display = "none";
+                        confirmButton.disabled = false;
+                    } else {
+                        phoneInput.value = "";
+                        phoneInput.disabled = true;
+                        warning.style.display = "block";
+                        confirmButton.disabled = true;
+                    }
+
+                    modal.style.display = "block";
+                } catch (error) {
+                    alert("Ошибка при загрузке номера телефона.");
+                }
+            });
+
+            closeButton.addEventListener("click", function () {
+                modal.style.display = "none";
+            });
+
+            window.addEventListener("click", function (event) {
+                if (event.target == modal) {
+                    modal.style.display = "none";
+                }
+            });
+
+            confirmButton.addEventListener("click", async function () {
+                const productId = parseInt('@Model.Id');
+                const requiresSetup = document.getElementById("requires-setup").checked;
+
+                const response = await fetch('@Url.Action("PlaceOrder", "Orders")', {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({ productId, requiresSetup })
+                });
+
+                if (response.ok) {
+                    alert("Заявка успешно оформлена!");
+                    modal.style.display = "none";
+                } else {
+                    const errorText = await response.text();
+                    if (errorText.includes("номер телефона")) {
+                        alert("Необходимо указать номер телефона. Вы будете перенаправлены в личный кабинет.");
+                        window.location.href = "/Account/Manage";
+                    } else {
+                        alert("Ошибка при оформлении заказа: " + errorText);
+                    }
+                }
+            });
+        });
+    </script>
+}
+

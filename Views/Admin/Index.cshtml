@@ -1,0 +1,80 @@
+﻿@{
+    ViewData["Title"] = "Админ Панель";
+    var popperjs = "@popperjs";
+}
+
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>@ViewData["Title"]</title>
+
+    <!-- Подключаем Bootstrap -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet" />
+    <!-- Подключаем иконки FontAwesome для иконок на панели -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet" />
+</head>
+<body>
+
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Боковое меню -->
+            <nav id="sidebar" class="col-md-3 col-lg-2 d-md-block bg-light sidebar">
+                <div class="sidebar-sticky">
+                    <ul class="nav flex-column">
+                        <li class="nav-item">
+                            <a class="nav-link active" href="/Admin/Index">
+                                <i class="fas fa-tachometer-alt"></i>
+                                Главная
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/Admin/ProductList">
+                                <i class="fas fa-box"></i>
+                                Товары
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/Admin/IncomingOrders">
+                                <i class="fas fa-shopping-cart"></i>
+                                Входящие заказы
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/Admin/ActiveOrders">
+                                <i class="fas fa-truck"></i>
+                                Активные заказы
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/Admin/CompletedOrders">
+                                <i class="fas fa-check-circle"></i>
+                                Завершённые заказы
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/Admin/Analytics">
+                                <i class="fas fa-chart-line"></i>
+                                Статистика
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+
+            <!-- Основное содержимое -->
+            <main role="main" class="col-md-9 ml-sm-auto col-lg-10 px-4">
+                <h1>@ViewData["Title"]</h1>
+                <p>Добро пожаловать в админ панель! Выберите раздел из меню слева.</p>
+            </main>
+        </div>
+    </div>
+
+    <!-- Подключаем необходимые скрипты для работы с Bootstrap и Popper.js -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.2/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+</body>
+</html>

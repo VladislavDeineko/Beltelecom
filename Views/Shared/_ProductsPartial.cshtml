@@ -14,7 +14,7 @@
                     <p class="installment-text">Ежемесячный платеж на @product.InstallmentMonths мес.</p>
                     <p class="card-text">@product.Description</p>
                     <p class="card-text"><strong>Цена: </strong>@product.Price руб.</p>
-                    <p class="card-text">На складе: @product.Stock</p>
+                    <p class="card-text">Осталось: @product.Stock</p>
                     <p class="warranty"><strong>Гарантия:</strong> @product.WarrantyMonths мес.</p>
                     <a href="@Url.Action("Details", "Products", new { id = product.Id })" class="btn btn-primary">Подробнее</a>
                 </div>

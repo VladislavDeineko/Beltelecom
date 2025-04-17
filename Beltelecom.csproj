@@ -19,6 +19,7 @@
   <ItemGroup>
     <Folder Include="Data\Migrations\" />
     <Folder Include="Services\" />
+    <Folder Include="Views\Orders\" />
     <Folder Include="wwwroot\images\" />
   </ItemGroup>
 

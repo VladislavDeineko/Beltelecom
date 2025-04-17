@@ -20,6 +20,7 @@ public class ApplicationDbContext : IdentityDbContext<IdentityUser>
     public DbSet<UserDealInfo> UserDealInfos { get; set; }
     public DbSet<Order> Orders { get; set; }
     public DbSet<Favorite> Favorites { get; set; }
+    public DbSet<ProductSpecification> ProductSpecifications { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -44,8 +45,16 @@ public class ApplicationDbContext : IdentityDbContext<IdentityUser>
             .Property(p => p.Price)
             .HasColumnType("decimal(10,2)");  // 10 - общее количество цифр, 2 - количество цифр после запятой
 
+        modelBuilder.Entity<ProductSpecification>()
+            .HasOne(ps => ps.Product)
+            .WithMany(p => p.Specifications)
+            .HasForeignKey(ps => ps.ProductId)
+            .OnDelete(DeleteBehavior.Cascade);
+
         base.OnModelCreating(modelBuilder);  // Вызов базового метода для выполнения любых дополнительных настроек
     }
+
+
 
     //protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     //{

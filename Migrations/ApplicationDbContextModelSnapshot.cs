@@ -96,10 +96,16 @@ namespace Beltelecom.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<DateTime?>("CompletedDate")
+                        .HasColumnType("datetime2");
+
                     b.Property<int>("InstallmentMonths")
                         .HasColumnType("int");
 
                     b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsCompleted")
                         .HasColumnType("bit");
 
                     b.Property<DateTime>("OrderDate")
@@ -117,6 +123,9 @@ namespace Beltelecom.Migrations
                     b.Property<decimal>("TotalAmount")
                         .HasColumnType("decimal(10,2)");
 
+                    b.Property<int>("UserDealInfoId")
+                        .HasColumnType("int");
+
                     b.Property<string>("UserId")
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
@@ -124,6 +133,8 @@ namespace Beltelecom.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("ProductId");
+
+                    b.HasIndex("UserDealInfoId");
 
                     b.HasIndex("UserId");
 
@@ -177,6 +188,36 @@ namespace Beltelecom.Migrations
                     b.HasIndex("CategoryId");
 
                     b.ToTable("Products");
+                });
+
+            modelBuilder.Entity("Beltelecom.Models.ProductSpecification", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Group")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("ProductId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Value")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProductId");
+
+                    b.ToTable("ProductSpecifications");
                 });
 
             modelBuilder.Entity("Beltelecom.Models.UserAddress", b =>
@@ -488,6 +529,12 @@ namespace Beltelecom.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("Beltelecom.Models.UserDealInfo", "UserDealInfo")
+                        .WithMany()
+                        .HasForeignKey("UserDealInfoId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", "User")
                         .WithMany()
                         .HasForeignKey("UserId")
@@ -497,6 +544,8 @@ namespace Beltelecom.Migrations
                     b.Navigation("Product");
 
                     b.Navigation("User");
+
+                    b.Navigation("UserDealInfo");
                 });
 
             modelBuilder.Entity("Beltelecom.Models.Product", b =>
@@ -516,6 +565,17 @@ namespace Beltelecom.Migrations
                     b.Navigation("Brand");
 
                     b.Navigation("Category");
+                });
+
+            modelBuilder.Entity("Beltelecom.Models.ProductSpecification", b =>
+                {
+                    b.HasOne("Beltelecom.Models.Product", "Product")
+                        .WithMany("Specifications")
+                        .HasForeignKey("ProductId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Product");
                 });
 
             modelBuilder.Entity("Beltelecom.Models.UserAddress", b =>
@@ -599,6 +659,11 @@ namespace Beltelecom.Migrations
             modelBuilder.Entity("Beltelecom.Models.Category", b =>
                 {
                     b.Navigation("Products");
+                });
+
+            modelBuilder.Entity("Beltelecom.Models.Product", b =>
+                {
+                    b.Navigation("Specifications");
                 });
 #pragma warning restore 612, 618
         }

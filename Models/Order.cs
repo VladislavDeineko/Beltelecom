@@ -37,5 +37,10 @@ namespace Beltelecom.Models
         public DateTime OrderDate { get; set; } = DateTime.UtcNow; // Дата заказа
 
         public bool IsActive { get; set; } = false; // Активен
+
+        public bool IsCompleted { get; set; } = false; // флаг завершён
+
+        public DateTime? CompletedDate { get; set; } // Дата завершения
+
     }
 }

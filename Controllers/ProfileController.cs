@@ -6,6 +6,7 @@ using Beltelecom.Data;
 using Beltelecom.Models;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Runtime.ConstrainedExecution;
 
 namespace Beltelecom.Controllers
 {
@@ -108,7 +109,7 @@ namespace Beltelecom.Controllers
                 userDealInfo.PassportNumber = string.IsNullOrEmpty(userDealInfo.PassportNumber) ? "Не указано" : userDealInfo.PassportNumber;
                 userDealInfo.PassportIssuedBy = string.IsNullOrEmpty(userDealInfo.PassportIssuedBy) ? "Не указано" : userDealInfo.PassportIssuedBy;
                 userDealInfo.PersonalNumber = string.IsNullOrEmpty(userDealInfo.PersonalNumber) ? "Не указано" : userDealInfo.PersonalNumber;
-                userDealInfo.PhoneNumber = string.IsNullOrEmpty(userDealInfo.PhoneNumber) ? "Не указано" : userDealInfo.PhoneNumber;
+                userDealInfo.PhoneNumber = user.PhoneNumber;
                 _context.UserDealInfos.Add(userDealInfo);
             }
             else
@@ -121,7 +122,7 @@ namespace Beltelecom.Controllers
                 existingDealInfo.PassportNumber = string.IsNullOrEmpty(userDealInfo.PassportNumber) ? "Не указано" : userDealInfo.PassportNumber;
                 existingDealInfo.PassportIssuedBy = string.IsNullOrEmpty(userDealInfo.PassportIssuedBy) ? "Не указано" : userDealInfo.PassportIssuedBy;
                 existingDealInfo.PersonalNumber = string.IsNullOrEmpty(userDealInfo.PersonalNumber) ? "Не указано" : userDealInfo.PersonalNumber;
-                existingDealInfo.PhoneNumber = string.IsNullOrEmpty(userDealInfo.PhoneNumber) ? "Не указано" : userDealInfo.PhoneNumber;
+                existingDealInfo.PhoneNumber = user.PhoneNumber;
                 existingDealInfo.PassportIssuedDate = userDealInfo.PassportIssuedDate;
                 existingDealInfo.PassportIssuedDate = userDealInfo.PassportIssuedDate;
 

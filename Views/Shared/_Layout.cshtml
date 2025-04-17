@@ -23,7 +23,7 @@
                         <li class="nav-item"><a class="nav-link" asp-area="" asp-controller="Catalog" asp-action="Index">Каталог</a></li>
                         @if (User.IsInRole("Admin"))
                         {
-                            <li class="nav-item"><a class="nav-link" asp-area="" asp-controller="Admin" asp-action="Index">Админ-панель</a></li>
+                            <li class="nav-item"><a class="nav-link" asp-controller="Admin" asp-action="Index">Админ-панель</a></li>
                         }
                         @if (User.Identity.IsAuthenticated)
                         {
@@ -34,7 +34,7 @@
                         }
                         else
                         {
-                            <li class="nav-item"><a class="nav-link" asp-area="Identity" asp-page="/Account/Login">Войти</a></li>
+                            <li class="nav-item ms-auto"><a class="nav-link" asp-area="Identity" asp-page="/Account/Login">Войти</a></li>
                         }
                     </ul>
                 </div>

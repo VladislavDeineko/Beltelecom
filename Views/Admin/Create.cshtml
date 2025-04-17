@@ -1,0 +1,35 @@
+﻿@model Beltelecom.Models.Product
+
+<h1>Добавить товар</h1>
+
+<form asp-action="Create">
+    <div class="form-group">
+        <label for="Name">Название</label>
+        <input type="text" class="form-control" id="Name" name="Name" required />
+    </div>
+    <div class="form-group">
+        <label for="Price">Цена</label>
+        <input type="number" class="form-control" id="Price" name="Price" required />
+    </div>
+    <div class="form-group">
+        <label for="CategoryId">Категория</label>
+        <select id="CategoryId" name="CategoryId" class="form-control" required>
+            <option value="">Выберите категорию</option>
+            @foreach (var category in ViewData["Categories"] as SelectList)
+            {
+                    <option value="@category.Value">@category.Text</option>
+            }
+        </select>
+    </div>
+    <div class="form-group">
+        <label for="BrandId">Бренд</label>
+        <select id="BrandId" name="BrandId" class="form-control" required>
+            <option value="">Выберите бренд</option>
+            @foreach (var brand in ViewData["Brands"] as SelectList)
+            {
+                    <option value="@brand.Value">@brand.Text</option>
+            }
+        </select>
+    </div>
+    <button type="submit" class="btn btn-success">Сохранить</button>
+</form>
