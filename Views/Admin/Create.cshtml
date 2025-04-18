@@ -1,35 +1,112 @@
-﻿@model Beltelecom.Models.Product
+﻿@model Product
 
-<h1>Добавить товар</h1>
+@{
+    ViewData["Title"] = "Добавить товар";
+}
 
-<form asp-action="Create">
+<h2>Добавить товар</h2>
+
+@using (Html.BeginForm("Create", "Admin", FormMethod.Post, new { enctype = "multipart/form-data" }))
+{
+    @Html.AntiForgeryToken()
+
     <div class="form-group">
-        <label for="Name">Название</label>
-        <input type="text" class="form-control" id="Name" name="Name" required />
+        <label asp-for="Name"></label>
+        <input asp-for="Name" class="form-control" />
+        <span asp-validation-for="Name" class="text-danger"></span>
     </div>
+
     <div class="form-group">
-        <label for="Price">Цена</label>
-        <input type="number" class="form-control" id="Price" name="Price" required />
+        <label asp-for="Price"></label>
+        <input asp-for="Price" class="form-control" />
+        <span asp-validation-for="Price" class="text-danger"></span>
     </div>
+
     <div class="form-group">
-        <label for="CategoryId">Категория</label>
-        <select id="CategoryId" name="CategoryId" class="form-control" required>
-            <option value="">Выберите категорию</option>
-            @foreach (var category in ViewData["Categories"] as SelectList)
-            {
-                    <option value="@category.Value">@category.Text</option>
-            }
+        <label asp-for="CategoryId"></label>
+        <select asp-for="CategoryId" asp-items="ViewBag.Categories" class="form-control">
+            <option value="">-- Выберите категорию --</option>
         </select>
+        <span asp-validation-for="CategoryId" class="text-danger"></span>
     </div>
+
     <div class="form-group">
-        <label for="BrandId">Бренд</label>
-        <select id="BrandId" name="BrandId" class="form-control" required>
-            <option value="">Выберите бренд</option>
-            @foreach (var brand in ViewData["Brands"] as SelectList)
-            {
-                    <option value="@brand.Value">@brand.Text</option>
-            }
+        <label asp-for="BrandId"></label>
+        <select asp-for="BrandId" asp-items="ViewBag.Brands" class="form-control">
+            <option value="">-- Выберите бренд --</option>
         </select>
+        <span asp-validation-for="BrandId" class="text-danger"></span>
     </div>
-    <button type="submit" class="btn btn-success">Сохранить</button>
-</form>
+
+    <div class="form-group">
+        <label asp-for="Stock"></label>
+        <input asp-for="Stock" class="form-control" />
+        <span asp-validation-for="Stock" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="InstallmentMonths"></label>
+        <input asp-for="InstallmentMonths" class="form-control" />
+        <span asp-validation-for="InstallmentMonths" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="WarrantyMonths"></label>
+        <input asp-for="WarrantyMonths" class="form-control" />
+        <span asp-validation-for="WarrantyMonths" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="Description"></label>
+        <textarea asp-for="Description" class="form-control"></textarea>
+        <span asp-validation-for="Description" class="text-danger"></span>
+    </div>
+
+    <hr />
+    <h4>Характеристики</h4>
+    <div id="specifications-container"></div>
+
+    <button type="submit" class="btn btn-primary mt-3">Сохранить</button>
+}
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+
+    <script>
+        $(document).ready(function () {
+            $('#CategoryId').change(function () {
+                const categoryId = $(this).val();
+                if (!categoryId) return;
+
+                $.get('/Admin/GetSpecificationTemplate', { categoryId }, function (specs) {
+                    let container = $('#specifications-container');
+                    container.empty();
+
+                    if (specs.length === 0) return;
+
+                    let grouped = {};
+                    specs.forEach((s, index) => {
+                        if (!grouped[s.group]) grouped[s.group] = [];
+                        grouped[s.group].push({ ...s, index });
+                    });
+
+                    let specIndex = 0;
+                    for (const group in grouped) {
+                        container.append(`<h5 class="mt-3">${group}</h5>`);
+                        grouped[group].forEach(spec => {
+                            container.append(`
+                                <div class="form-group">
+                                    <label>${spec.name}</label>
+                                    <input type="text" class="form-control" name="Specifications[${specIndex}].Value" required />
+                                    <input type="hidden" name="Specifications[${specIndex}].Name" value="${spec.name}" />
+                                    <input type="hidden" name="Specifications[${specIndex}].Group" value="${spec.group}" />
+                                </div>
+                            `);
+                            specIndex++;
+                        });
+                    }
+                });
+            });
+        });
+    </script>
+}

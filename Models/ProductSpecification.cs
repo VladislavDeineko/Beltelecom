@@ -12,7 +12,7 @@ namespace Beltelecom.Models
         public int ProductId { get; set; }
 
         [ForeignKey("ProductId")]
-        public Product Product { get; set; }
+        public Product? Product { get; set; }
 
         [Required]
         public string Name { get; set; } // Название характеристики

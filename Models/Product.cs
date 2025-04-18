@@ -23,16 +23,16 @@ namespace Beltelecom.Models
         [Required]
         public int CategoryId { get; set; }
         [ForeignKey("CategoryId")]
-        public Category Category { get; set; }
+        public Category? Category { get; set; }
 
         [Required]
         public int BrandId { get; set; }
         [ForeignKey("BrandId")]
-        public Brand Brand { get; set; }
+        public Brand? Brand { get; set; }
         public string? ImageUrl { get; set; }
         public int WarrantyMonths { get; set; } // Гарантия в месяцах
         public int InstallmentMonths { get; set; } // Рассрочка в месяцах
         public DateTime CreatedAt { get; set; }
-        public List<ProductSpecification> Specifications { get; set; }
+        public List<ProductSpecification>? Specifications { get; set; }
     }
 }

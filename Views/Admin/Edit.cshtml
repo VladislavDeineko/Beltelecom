@@ -1,39 +1,79 @@
-﻿@model Beltelecom.Models.Product
+﻿@using Beltelecom.Models.ViewModels
+@model ProductEditViewModel
 
 <h1>Редактировать товар</h1>
 
 <form asp-action="Edit">
+    <input type="hidden" name="Product.Id" value="@Model.Product.Id" />
+
     <div class="form-group">
         <label for="Name">Название</label>
-        <input type="text" class="form-control" id="Name" name="Name" value="@Model.Name" required />
+        <input type="text" class="form-control" id="Name" name="Product.Name" value="@Model.Product.Name" required />
     </div>
+
     <div class="form-group">
-        <label for="Price">Цена</label>
-        <input type="number" class="form-control" id="Price" name="Price" value="@Model.Price" required />
+        <label for="Description">Описание</label>
+        <textarea class="form-control" id="Description" name="Product.Description">@Model.Product.Description</textarea>
     </div>
+
     <div class="form-group">
         <label for="CategoryId">Категория</label>
-        <select asp-for="CategoryId" class="form-control" asp-items="@(new SelectList(ViewData["Categories"] as IEnumerable<SelectListItem>, "Value", "Text"))" required>
+        <select asp-for="Product.CategoryId" class="form-control" asp-items="@(new SelectList(ViewData["Categories"] as IEnumerable<SelectListItem>, "Value", "Text"))" required>
             <option value="">Выберите категорию</option>
         </select>
     </div>
+
     <div class="form-group">
         <label for="BrandId">Бренд</label>
-        <select asp-for="BrandId" class="form-control" asp-items="@(new SelectList(ViewData["Brands"] as IEnumerable<SelectListItem>, "Value", "Text"))" required>
+        <select asp-for="Product.BrandId" class="form-control" asp-items="@(new SelectList(ViewData["Brands"] as IEnumerable<SelectListItem>, "Value", "Text"))" required>
             <option value="">Выберите бренд</option>
         </select>
     </div>
+
     <div class="form-group">
-        <label for="ImageUrl">Ссылка на изображение</label>
-        <input type="text" class="form-control" id="ImageUrl" name="ImageUrl" value="@Model.ImageUrl" />
+        <label for="Price">Цена</label>
+        <input asp-for="Product.Price" class="form-control" type="number" step="0.01" />
     </div>
+
     <div class="form-group">
-        <label for="Description">Описание</label>
-        <textarea class="form-control" id="Description" name="Description">@Model.Description</textarea>
+        <label for="Stock">Количество на складе</label>
+        <input type="number" class="form-control" id="Stock" name="Product.Stock" value="@Model.Product.Stock" required />
     </div>
+
+    <div class="form-group">
+        <label for="InstallmentMonths">Рассрочка (в месяцах)</label>
+        <input type="number" class="form-control" id="InstallmentMonths" name="Product.InstallmentMonths" value="@Model.Product.InstallmentMonths" />
+    </div>
+
     <div class="form-group">
         <label for="WarrantyMonths">Гарантия (в месяцах)</label>
-        <input type="number" class="form-control" id="WarrantyMonths" name="WarrantyMonths" value="@Model.WarrantyMonths" />
+        <input type="number" class="form-control" id="WarrantyMonths" name="Product.WarrantyMonths" value="@Model.Product.WarrantyMonths" />
     </div>
-    <button type="submit" class="btn btn-success">Сохранить</button>
+
+    <div class="form-group">
+        <label for="ImageUrl">Ссылка на изображение</label>
+        <input type="text" class="form-control" id="ImageUrl" name="Product.ImageUrl" value="@Model.Product.ImageUrl" />
+    </div>
+
+    @if (Model.Product.Specifications != null && Model.Product.Specifications.Any())
+    {
+        var groupedSpecs = Model.Product.Specifications.GroupBy(s => s.Group);
+        foreach (var group in groupedSpecs)
+        {
+            <h4>@(string.IsNullOrEmpty(group.Key) ? "Общие характеристики" : group.Key)</h4>
+            foreach (var spec in group)
+            {
+                <div class="form-group">
+                    <label>@spec.Name</label>
+                    <input type="hidden" name="Specifications[@spec.Id].Id" value="@spec.Id" />
+                    <input type="hidden" name="Specifications[@spec.Id].Name" value="@spec.Name" />
+                    <input type="hidden" name="Specifications[@spec.Id].Group" value="@spec.Group" />
+                    <input type="text" class="form-control" name="Specifications[@spec.Id].Value" value="@spec.Value" />
+                </div>
+            }
+        }
+    }
+
+    <button type="submit" class="btn btn-success btn-save">Сохранить</button>
 </form>
+

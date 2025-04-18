@@ -1,8 +1,12 @@
 ﻿@using Beltelecom.Models.ViewModels
 @model List<IncomingOrderViewModel>
+@removeTagHelper Microsoft.AspNetCore.Mvc.TagHelpers.OptionTagHelper, Microsoft.AspNetCore.Mvc.TagHelpers
 
 @{
     ViewData["Title"] = "Завершённые заказы";
+    var selectedMonth = ViewData["SelectedMonth"] as int? ?? DateTime.Now.Month;
+    var selectedYear = ViewData["SelectedYear"] as int? ?? DateTime.Now.Year;
+    var currentFilter = ViewData["CurrentFilter"] as string;
 }
 
 <h1>@ViewData["Title"]</h1>
@@ -13,6 +17,37 @@
         <button type="submit" class="btn btn-primary">Поиск</button>
     </div>
 </form>
+
+<form method="get" asp-action="CompletedOrders" class="form-inline mb-3">
+    <div class="form-group">
+        <label for="month" class="mr-2">Месяц</label>
+        <select id="month" name="month" class="form-control form-control-sm">
+            @{
+                var monthNames = System.Globalization.CultureInfo.GetCultureInfo("ru-RU").DateTimeFormat.MonthNames;
+                for (int i = 1; i <= 12; i++)
+                {
+                    <option value="@i" @(i == selectedMonth ? "selected" : "")>@monthNames[i - 1]</option>
+                }
+            }
+        </select>
+    </div>
+
+    <div class="form-group ml-3">
+        <label for="year" class="mr-2">Год</label>
+        <select id="year" name="year" class="form-control form-control-sm">
+            @{
+                var currentYearValue = DateTime.Now.Year;
+                for (int y = currentYearValue; y >= currentYearValue - 5; y--)
+                {
+                    <option value="@y" @(y == selectedYear ? "selected" : "")>@y</option>
+                }
+            }
+        </select>
+    </div>
+
+    <button type="submit" class="btn btn-primary ml-3">Фильтровать</button>
+</form>
+
 
 <div class="order-sort">
     <a asp-action="IncomingOrders" asp-route-sortOrder="@ViewData["DateSortParm"]" asp-route-searchString="@ViewData["CurrentFilter"]">
@@ -36,7 +71,7 @@
             <tr>
                 <td>@item.FullName</td>
                 <td>@item.Order.Product?.Name</td>
-                <td>@item.Order.TotalAmount руб.</td>
+                <td>Выплачено @item.Order.PaidAmount из @item.Order.TotalAmount руб.</td>
                 <td>@item.Order.OrderDate.ToString("dd.MM.yyyy")</td>
                 <td>@item.Order.CompletedDate?.ToString("dd.MM.yyyy")</td>
             </tr>

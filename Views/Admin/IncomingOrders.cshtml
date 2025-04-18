@@ -1,8 +1,13 @@
 ﻿@using Beltelecom.Models.ViewModels
 @model List<IncomingOrderViewModel>
+@removeTagHelper Microsoft.AspNetCore.Mvc.TagHelpers.OptionTagHelper, Microsoft.AspNetCore.Mvc.TagHelpers
+
 
 @{
     ViewData["Title"] = "Входящие заказы";
+    var selectedMonth = ViewData["SelectedMonth"] as int? ?? DateTime.Now.Month;
+    var selectedYear = ViewData["SelectedYear"] as int? ?? DateTime.Now.Year;
+    var currentFilter = ViewData["CurrentFilter"] as string;
 }
 
 <h1>Входящие заказы</h1>
@@ -11,6 +16,36 @@
     <input type="text" name="searchString" value="@ViewData["CurrentFilter"]" class="form-control me-2" placeholder="Поиск по ФИО" />
     <button type="submit" class="btn btn-primary">Поиск</button>
 </form>
+
+<form method="get" asp-action="IncomingOrders" class="form-inline mb-3">
+    <div class="form-group">
+        <label for="month" class="mr-2">Месяц</label>
+        <select id="month" name="month" class="form-control2 form-control-sm">
+            @{
+                var monthNames = System.Globalization.CultureInfo.GetCultureInfo("ru-RU").DateTimeFormat.MonthNames;
+                for (int i = 1; i <= 12; i++)
+                {
+                    <option value="@i" @(i == selectedMonth ? "selected" : "")>@monthNames[i - 1]</option>
+                }
+            }
+        </select>
+    </div>
+
+    <div class="form-group ml-3">
+        <label for="year" class="mr-2">Год</label>
+        <select id="year" name="year" class="form-control2 form-control-sm">
+            @{
+                var currentYearValue = DateTime.Now.Year;
+                for (int y = currentYearValue; y >= currentYearValue - 5; y--)
+                {
+                    <option value="@y" @(y == selectedYear ? "selected" : "")>@y</option>
+                }
+            }
+        </select>
+    </div>
+    <button type="submit" class="btn btn-primary ml-3">Фильтровать</button>
+</form>
+
 
 <div class="order-sort">
     <a asp-action="IncomingOrders" asp-route-sortOrder="@ViewData["DateSortParm"]" asp-route-searchString="@ViewData["CurrentFilter"]">
