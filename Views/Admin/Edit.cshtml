@@ -1,8 +1,12 @@
 ﻿@using Beltelecom.Models.ViewModels
 @model ProductEditViewModel
 
-<h1>Редактировать товар</h1>
-
+<h2 class="d-inline-flex align-items-center">
+    <a href="/Admin/ProductList" class="btn btn-sm btn-outline-primary me-2" title="Назад к списку">
+        <i class="bi bi-arrow-left"></i>
+    </a>
+    Редактировать товар
+</h2>
 <form asp-action="Edit">
     <input type="hidden" name="Product.Id" value="@Model.Product.Id" />
 

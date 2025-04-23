@@ -11,17 +11,15 @@
 
 <h1>Активные заказы</h1>
 
-<form asp-action="@ViewContext.RouteData.Values["action"]" method="get" class="mb-3">
-    <div class="input-group">
-        <input type="text" name="searchString" value="@ViewData["CurrentFilter"]" class="form-control" placeholder="Поиск по ФИО">
-        <button type="submit" class="btn btn-primary">Поиск</button>
-    </div>
+<form asp-action="@ViewContext.RouteData.Values["action"]" method="get" class="mb-3 d-flex">
+    <input type="text" name="searchString" value="@ViewData["CurrentFilter"]" class="form-control me-2" placeholder="Поиск по ФИО">
+     <button type="submit" class="btn btn-primary">Поиск</button>
 </form>
 
 <form method="get" asp-action="ActiveOrders" class="form-inline mb-3">
     <div class="form-group">
         <label for="month" class="mr-2">Месяц</label>
-        <select id="month" name="month" class="form-control form-control-sm">
+        <select id="month" name="month" class="form-control2 form-control-sm">
             @{
                 var monthNames = System.Globalization.CultureInfo.GetCultureInfo("ru-RU").DateTimeFormat.MonthNames;
                 for (int i = 1; i <= 12; i++)
@@ -34,7 +32,7 @@
 
     <div class="form-group ml-3">
         <label for="year" class="mr-2">Год</label>
-        <select id="year" name="year" class="form-control form-control-sm">
+        <select id="year" name="year" class="form-control2 form-control-sm">
             @{
                 var currentYearValue = DateTime.Now.Year;
                 for (int y = currentYearValue; y >= currentYearValue - 5; y--)
@@ -48,9 +46,15 @@
     <button type="submit" class="btn btn-primary ml-3">Фильтровать</button>
 </form>
 
+<form method="get" asp-action="ExportActiveOrders">
+    <input type="hidden" name="searchString" value="@currentFilter" />
+    <input type="hidden" name="month" value="@selectedMonth" />
+    <input type="hidden" name="year" value="@selectedYear" />
+    <button type="submit" class="btn btn-success mb-3">Экспорт в Excel</button>
+</form>
 
 <div class="order-sort">
-    <a asp-action="IncomingOrders" asp-route-sortOrder="@ViewData["DateSortParm"]" asp-route-searchString="@ViewData["CurrentFilter"]">
+    <a asp-action="ActiveOrders" asp-route-sortOrder="@ViewData["DateSortParm"]" asp-route-searchString="@ViewData["CurrentFilter"]">
         Сортировать
     </a>
 </div>
@@ -59,6 +63,7 @@
     <thead>
         <tr>
             <th>ФИО</th>
+            <th>Телефон</th>
             <th>Товар</th>
             <th>Сумма</th>
             <th>Выплачено</th>
@@ -73,6 +78,7 @@
         {
             <tr>
                 <td>@item.FullName</td>
+                <td>@item.PhoneNumber</td>
                 <td>@item.Order.Product.Name</td>
                 <td>@item.Order.TotalAmount</td>
                 <td>@item.Order.PaidAmount</td>

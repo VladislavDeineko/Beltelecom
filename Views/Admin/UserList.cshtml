@@ -1,0 +1,61 @@
+﻿@using Beltelecom.Models.ViewModels
+@model List<UserListViewModel>
+
+@{
+    ViewData["Title"] = "Пользователи";
+}
+
+<h2>Пользователи</h2>
+
+<div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+    <a href="@Url.Action("ExportUsersToExcel", "Admin", new { search = Context.Request.Query["search"] })"
+       class="btn btn-success">
+        Экспорт в Excel
+    </a>
+
+    <form method="get" class="d-flex flex-grow-1" role="search" style="max-width: 500px;">
+        <input type="text" name="search" class="form-control me-2"
+               placeholder="Поиск по ФИО..." value="@Context.Request.Query["search"]" />
+        <button type="submit" class="btn btn-outline-primary">Поиск</button>
+    </form>
+</div>
+
+
+<table class="table table-bordered table-striped" id="usersTable">
+    <thead class="thead-dark">
+        <tr>
+            <th>ФИО</th>
+            <th>Email</th>
+            <th>Телефон</th>
+            <th>Адрес</th>
+            <th>Кол-во заказов</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var user in Model)
+        {
+            <tr>
+                <td>@user.FullName</td>
+                <td>@user.Email</td>
+                <td>@user.PhoneNumber</td>
+                <td>@user.Address</td>
+                <td>@user.OrdersCount</td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<script>
+    const input = document.getElementById("searchInput");
+    const table = document.getElementById("usersTable");
+
+    input.addEventListener("input", function () {
+        const filter = input.value.toLowerCase();
+        const rows = table.querySelectorAll("tbody tr");
+
+        rows.forEach(row => {
+            const text = row.textContent.toLowerCase();
+            row.style.display = text.includes(filter) ? "" : "none";
+        });
+    });
+</script>

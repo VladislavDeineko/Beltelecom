@@ -3,7 +3,7 @@
     public class ProductEditViewModel
     {
         public Product Product { get; set; }
-        public List<ProductSpecification> Specifications { get; set; }
+        public List<ProductSpecification>? Specifications { get; set; }
     }
 
 }

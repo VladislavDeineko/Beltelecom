@@ -117,5 +117,22 @@ namespace Beltelecom.Controllers
 
             return View("ProductList", products);  // Указываем явное имя представления
         }
+
+        [HttpGet]
+        public IActionResult SearchSuggestions(string term)
+        {
+            if (string.IsNullOrWhiteSpace(term))
+                return Json(new List<object>());
+
+            var loweredTerm = term.ToLower();
+
+            var suggestions = _context.Products
+                .Where(p => p.Name.ToLower().Contains(loweredTerm))
+                .Select(p => new { id = p.Id, name = p.Name })
+                .Take(5)
+                .ToList();
+
+            return Json(suggestions);
+        }
     }
 }

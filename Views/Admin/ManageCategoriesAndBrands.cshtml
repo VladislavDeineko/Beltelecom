@@ -1,0 +1,76 @@
+﻿@{
+    ViewData["Title"] = "Управление категориями и брендами";
+    var categories = ViewBag.Categories as List<Category>;
+    var brands = ViewBag.Brands as List<Brand>;
+}
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        @TempData["Error"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Закрыть"></button>
+    </div>
+}
+<h2 class="d-inline-flex align-items-center">
+    <a href="/Admin/ProductList" class="btn btn-sm btn-outline-primary me-2" title="Назад к списку">
+        <i class="bi bi-arrow-left"></i>
+    </a>
+    Категории
+</h2>
+
+<form asp-action="AddCategory" method="post" enctype="multipart/form-data" class="mb-3 d-flex gap-2 flex-wrap">
+    <input type="text" name="name" class="form-control" placeholder="Новая категория" required />
+    <input type="file" name="image" class="form-control" accept="image/*" />
+    <button type="submit" class="btn btn-primary">Добавить</button>
+</form>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Название</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var category in categories)
+        {
+            <tr>
+                <td>@category.Name</td>
+                <td class="text-end">
+                    <form asp-action="DeleteCategory" method="post" class="d-inline">
+                        <input type="hidden" name="id" value="@category.Id" />
+                        <button type="submit" class="btn btn-danger btn-sm">Удалить</button>
+                    </form>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<h2 class="mt-5">Бренды</h2>
+<form asp-action="AddBrand" method="post" class="mb-3 d-flex gap-2">
+    <input type="text" name="name" class="form-control" placeholder="Новый бренд" required />
+    <button type="submit" class="btn btn-primary">Добавить</button>
+</form>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Название</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var brand in brands)
+        {
+            <tr>
+                <td>@brand.Name</td>
+                <td class="text-end">
+                    <form asp-action="DeleteBrand" method="post" class="d-inline">
+                        <input type="hidden" name="id" value="@brand.Id" />
+                        <button type="submit" class="btn btn-danger btn-sm">Удалить</button>
+                    </form>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

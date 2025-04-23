@@ -1,0 +1,270 @@
+﻿@using Beltelecom.Models.ViewModels
+@model DashboardStatsViewModel
+@removeTagHelper Microsoft.AspNetCore.Mvc.TagHelpers.OptionTagHelper, Microsoft.AspNetCore.Mvc.TagHelpers
+
+@{
+    ViewData["Title"] = "Статистика";
+}
+
+<h2 class="mb-4">Общая статистика</h2>
+
+<div class="row">
+    <div class="col-md-3">
+        <div class="card text-white bg-primary mb-3">
+            <div class="card-body">
+                <h5 class="card-title">Всего заказов</h5>
+                <p class="card-text fs-4">@Model.TotalOrders</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="card text-white bg-warning mb-3">
+            <div class="card-body">
+                <h5 class="card-title">Активные заказы</h5>
+                <p class="card-text fs-4">@Model.ActiveOrders</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="card text-white bg-success mb-3">
+            <div class="card-body">
+                <h5 class="card-title">Завершенные заказы</h5>
+                <p class="card-text fs-4">@Model.CompletedOrders</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="card text-white bg-info mb-3">
+            <div class="card-body">
+                <h5 class="card-title">Новых в этом месяце</h5>
+                <p class="card-text fs-4">@Model.NewOrdersThisMonth</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-white bg-info mb-3 charts-card">
+            <div class="card-header">Средняя сумма заказа</div>
+            <div class="card-body">
+                <h5 class="card-title">@Model.AverageOrderAmount.ToString("0.00") руб.</h5>
+            </div>
+        </div>
+    </div>
+</div>
+
+<h3 class="mt-4">График "Заказы по месяцам"</h3>
+
+<div class="row mb-3 chart-filter">
+    <div class="col-md-3">
+        <label for="startMonth">Начало периода</label>
+        <select id="startMonth" class="form-control">
+            @for (int i = 1; i <= 12; i++)
+            {
+                <option value="@i" @(i == DateTime.Now.Month ? "selected" : "")>@i</option>
+            }
+        </select>
+    </div>
+    <div class="col-md-3">
+        <label for="startYear">Год начала</label>
+        <select id="startYear" class="form-control">
+            @for (int i = DateTime.Now.Year - 5; i <= DateTime.Now.Year; i++)
+            {
+                <option value="@i" @(i == DateTime.Now.Year ? "selected" : "")>@i</option>
+            }
+        </select>
+    </div>
+    <div class="col-md-3">
+        <label for="endMonth">Конец периода</label>
+        <select id="endMonth" class="form-control">
+            @for (int i = 1; i <= 12; i++)
+            {
+                <option value="@i" @(i == DateTime.Now.Month ? "selected" : "")>@i</option>
+            }
+        </select>
+    </div>
+    <div class="col-md-3">
+        <label for="endYear">Год конца</label>
+        <select id="endYear" class="form-control">
+            @for (int i = DateTime.Now.Year - 5; i <= DateTime.Now.Year; i++)
+            {
+                <option value="@i" @(i == DateTime.Now.Year ? "selected" : "")>@i</option>
+            }
+        </select>
+    </div>
+</div>
+
+<button id="updateChart" class="btn btn-primary mb-3">Обновить график</button>
+
+<canvas id="ordersChart" width="400" height="130"></canvas>
+
+<div class="mt-5">
+    <h3>Заказы по категориям товаров</h3>
+    <canvas id="ordersByCategoryChart" height="40"></canvas>
+</div>
+
+<div class="mt-5">
+    <h3>Заказы по брендам</h3>
+    <canvas id="ordersByBrandChart" height="40"></canvas>
+</div>
+@section Scripts {
+    <script>
+        var ordersChart;
+
+        function updateChartData(startMonth, startYear, endMonth, endYear) {
+            $.ajax({
+                url: '@Url.Action("GetOrdersByMonthTypes", "Admin")',
+                data: {
+                    startMonth: startMonth,
+                    startYear: startYear,
+                    endMonth: endMonth,
+                    endYear: endYear
+                },
+                success: function (data) {
+                    var labels = data.months;
+                    var totalOrders = data.totalOrders;
+                    var activeOrders = data.activeOrders;
+                    var completedOrders = data.completedOrders;
+
+                    // Убираем инвертирование данных
+                    // labels.reverse();  // Удаляем эту строку
+                    // totalOrders.reverse();  // Удаляем эту строку
+                    // activeOrders.reverse();  // Удаляем эту строку
+                    // completedOrders.reverse();  // Удаляем эту строку
+
+                    // Обновляем данные на графике
+                    ordersChart.data.labels = labels;
+                    ordersChart.data.datasets[0].data = totalOrders;
+                    ordersChart.data.datasets[1].data = activeOrders;
+                    ordersChart.data.datasets[2].data = completedOrders;
+                    ordersChart.update();
+                }
+            });
+        }
+
+        $(document).ready(function () {
+            var currentDate = new Date();
+            var startDate = new Date(currentDate);
+            startDate.setMonth(currentDate.getMonth() - 3); // Отнимаем 3 месяца
+
+            $('#startMonth').val(startDate.getMonth() + 1); // Месяцы с 1, поэтому добавляем 1
+            $('#startYear').val(startDate.getFullYear());
+
+            $('#endMonth').val(currentDate.getMonth() + 1); // Текущий месяц
+            $('#endYear').val(currentDate.getFullYear()); // Текущий год
+
+            var ctx = document.getElementById('ordersChart').getContext('2d');
+            ordersChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: [],
+                    datasets: [
+                        {
+                            label: 'Все заказы',
+                            data: [],
+                            borderColor: 'rgba(75, 192, 192, 1)',
+                            backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                            borderWidth: 2
+                        },
+                        {
+                            label: 'Активные заказы',
+                            data: [],
+                            borderColor: 'rgba(255, 206, 86, 1)',
+                            backgroundColor: 'rgba(255, 206, 86, 0.2)',
+                            borderWidth: 2
+                        },
+                        {
+                            label: 'Завершённые заказы',
+                            data: [],
+                            borderColor: 'rgba(54, 162, 235, 1)',
+                            backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                            borderWidth: 2
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                stepSize: 1
+                            }
+                        }
+                    }
+                }
+            });
+
+            $('#updateChart').click(function () {
+                var startMonth = $('#startMonth').val();
+                var startYear = $('#startYear').val();
+                var endMonth = $('#endMonth').val();
+                var endYear = $('#endYear').val();
+
+                updateChartData(startMonth, startYear, endMonth, endYear);
+            });
+
+            updateChartData($('#startMonth').val(), $('#startYear').val(), $('#endMonth').val(), $('#endYear').val());
+        });
+    </script>
+    <script>
+        fetch('/Admin/GetOrdersByCategory')
+            .then(response => response.json())
+            .then(data => {
+                const ctxCat = document.getElementById('ordersByCategoryChart').getContext('2d');
+                const chart = new Chart(ctxCat, {
+                    type: 'bar',
+                    data: {
+                        labels: data.labels,
+                        datasets: [{
+                            label: 'Количество заказов',
+                            data: data.counts,
+                            backgroundColor: 'rgba(54, 162, 235, 0.6)',
+                            borderColor: 'rgba(54, 162, 235, 1)',
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        indexAxis: 'y', // Горизонтальный бар
+                        scales: {
+                            x: {
+                                beginAtZero: true
+                            }
+                        }
+                    }
+                });
+            })
+            .catch(error => console.error('Ошибка при загрузке данных по категориям:', error));
+    </script>
+    <script>
+        fetch('/Admin/GetOrdersByBrand')
+            .then(response => response.json())
+            .then(data => {
+                const ctxBrand = document.getElementById('ordersByBrandChart').getContext('2d');
+                const chart = new Chart(ctxBrand, {
+                    type: 'bar',
+                    data: {
+                        labels: data.labels,
+                        datasets: [{
+                            label: 'Количество заказов',
+                            data: data.counts,
+                            backgroundColor: 'rgba(255, 159, 64, 0.6)',
+                            borderColor: 'rgba(255, 159, 64, 1)',
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        indexAxis: 'y',
+                        scales: {
+                            x: {
+                                beginAtZero: true
+                            }
+                        }
+                    }
+                });
+            })
+            .catch(error => console.error('Ошибка при загрузке данных по брендам:', error));
+    </script>
+
+}

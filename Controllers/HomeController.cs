@@ -25,8 +25,13 @@ public class HomeController : Controller
                                      .Take(4)
                                      .ToListAsync();
 
-        // Извлекаем все категории (или другие данные, которые вам нужны)
-        var categories = await _context.Categories.ToListAsync();
+        // Извлекаем категории 
+        var categories = await _context.Categories
+            .Include(c => c.Products) // обязательно для Any()
+            .Where(c => c.Products.Any())
+            .OrderBy(c => c.Name)
+            .Take(6)
+            .ToListAsync();
 
         // Создаем HomeViewModel
         var model = new HomeViewModel

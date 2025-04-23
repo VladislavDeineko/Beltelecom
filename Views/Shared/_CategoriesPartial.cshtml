@@ -2,19 +2,14 @@
 
 <section id="catalog" class="my-5">
     <h2>Каталог товаров</h2>
-    <div class="row">
-        @foreach (var category in Model.Select((cat, index) => new { cat, index }))
+    <div class="row row-cols-1 row-cols-md-3 g-4">
+        @foreach (var category in Model)
         {
-            if (category.index % 3 == 0)
-            {
-                @:<div class="w-100"></div>
-            }
-            <div class="col-md-4 mb-4">
-                <!-- Обновляем ссылку для передачи параметра category в контроллер -->
-                <a href="/Catalog?category=@category.cat.Name" class="text-decoration-none">
+            <div class="col">
+                <a href="/Catalog?category=@category.Name" class="text-decoration-none">
                     <div class="category-card">
-                        <img src="@category.cat.ImageUrl" alt="@category.cat.Name">
-                        <div class="category-title">@category.cat.Name</div>
+                        <img src="@category.ImageUrl" alt="@category.Name">
+                        <div class="category-title">@category.Name</div>
                     </div>
                 </a>
             </div>

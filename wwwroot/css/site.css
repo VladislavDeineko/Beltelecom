@@ -3,21 +3,21 @@
     --primary-dark: #333;
     --primary-gray: #777;
     --button-hover: #b03a2e;
-    --light-gray: #f0f0f0; 
+    --light-gray: #f0f0f0;
 }
 
 html {
-  font-size: 14px;
+    font-size: 14px;
 }
 
 @media (min-width: 768px) {
-  html {
-    font-size: 16px;
-  }
+    html {
+        font-size: 16px;
+    }
 }
 
 .btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
-  box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
+    box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
 }
 
 html {
@@ -36,7 +36,7 @@ footer {
 }
 
 .navbar-sticky {
-    position: sticky; 
+    position: sticky;
     top: 0;
     z-index: 1030; /* Убедитесь, что меню находится поверх остальных элементов */
     width: 100%;
@@ -69,9 +69,8 @@ footer {
         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
     }
 
-.card img {
-
-}
+    .card img {
+    }
 
 .card-img-top {
     padding: 10px;
@@ -113,10 +112,10 @@ footer {
     border: 1px solid var(--primary-red);
 }
 
-.category-card:hover {
+    .category-card:hover {
         transform: translateY(-5px);
         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-}
+    }
 
     .category-card img {
         width: 100%;
@@ -191,7 +190,7 @@ footer {
     }
 
     .profile_form button,
-    .btn-red{
+    .btn-red {
         width: 100%;
         padding: 10px;
         background-color: var(--primary-red);
@@ -199,14 +198,14 @@ footer {
         border: none;
         border-radius: 5px;
         cursor: pointer;
-        margin-bottom:5px;
+        margin-bottom: 5px;
     }
 
-.profile_form button:hover,
-.btn-red:hover {
-    background-color: var(--button-hover);
-    color: white !important;
-}
+        .profile_form button:hover,
+        .btn-red:hover {
+            background-color: var(--button-hover);
+            color: white !important;
+        }
 
 .profile-main a {
     margin-top: 7px !important;
@@ -218,6 +217,49 @@ footer {
     gap: 30px;
     margin-top: 20px;
 }
+
+.search-wrapper {
+    max-width: 400px;
+    width: 100%;
+}
+
+    .search-wrapper .search-icon {
+        position: absolute;
+        top: 50%;
+        left: 15px;
+        transform: translateY(-50%);
+        color: #888;
+        font-size: 1.2rem;
+        pointer-events: none;
+    }
+
+#searchBox {
+    border-radius: 8px;
+    box-shadow: 0 0 5px rgba(0,0,0,0.05);
+}
+
+#suggestions {
+    top: 100%;
+    left: 0;
+    right: 0;
+    border: 1px solid #ddd;
+    border-top: none;
+    max-height: 200px;
+    overflow-y: auto;
+    background-color: white;
+    z-index: 1000;
+    border-radius: 0 0 8px 8px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+    #suggestions .list-group-item {
+        cursor: pointer;
+        transition: background-color 0.2s;
+    }
+
+        #suggestions .list-group-item:hover {
+            background-color: #f8f9fa;
+        }
 
 /* Стили для блока фильтров */
 .filters {
@@ -314,9 +356,9 @@ footer {
         width: 100%;
     }
 
-.product-card button:hover {
-    background-color: #c9302c;
-}
+        .product-card button:hover {
+            background-color: #c9302c;
+        }
 
 
 .monthly-payment {
@@ -419,9 +461,9 @@ footer {
     transition: 0.3s;
 }
 
-.add-to-cart:hover {
-    background: var(--button-hover);
-}
+    .add-to-cart:hover {
+        background: var(--button-hover);
+    }
 
 .favorite-button {
     background-color: #ff9800;
@@ -463,21 +505,21 @@ footer {
     overflow: hidden;
 }
 
-.product-specs li {
-    padding: 10px 15px;
-}
+    .product-specs li {
+        padding: 10px 15px;
+    }
 
-.product-specs li:nth-child(odd) {
-    background-color: #ffffff; /* белый */
-}
+        .product-specs li:nth-child(odd) {
+            background-color: #ffffff; /* белый */
+        }
 
-.product-specs li:nth-child(even) {
-    background-color: #f0f0f0; /* светло-серый */
-}
+        .product-specs li:nth-child(even) {
+            background-color: #f0f0f0; /* светло-серый */
+        }
 
 .spec-group {
-    text-align:center;
-    padding:10px;
+    text-align: center;
+    padding: 10px;
 }
 
 /*favorites*/
@@ -511,23 +553,23 @@ footer {
     border-radius: 10px;
 }
 
-.favorite-info h3 {
-    margin: 0;
-}
+    .favorite-info h3 {
+        margin: 0;
+    }
 
-.favorite-info a {
-    text-decoration: none;
-    color: var(--primary-dark);
-}
+    .favorite-info a {
+        text-decoration: none;
+        color: var(--primary-dark);
+    }
 
-.favorite-info a:hover {
-    text-decoration: none;
-    color: black;
-}
+        .favorite-info a:hover {
+            text-decoration: none;
+            color: black;
+        }
 
 /*orders*/
 .order-sort {
-    padding:5px;
+    padding: 5px;
 }
 
 /* Стили для фильтрационной формы */
@@ -619,12 +661,12 @@ select {
     font-weight: bold;
 }
 
-.close:hover,
-.close:focus {
-    color: black;
-    text-decoration: none;
-    cursor: pointer;
-}
+    .close:hover,
+    .close:focus {
+        color: black;
+        text-decoration: none;
+        cursor: pointer;
+    }
 
 /*create*/
 .btn-save {
@@ -640,4 +682,16 @@ select {
     z-index: 1050;
 }
 
-/*ProductList*/
+/*Графики*/
+#ordersChart {
+    width: 100%; /* Делает ширину графика адаптивной */
+    max-width: 1200px; /* Ограничивает максимальную ширину */
+    height: 300px; /* Устанавливает фиксированную высоту */
+}
+
+.charts-card {
+    margin-top: 10px;
+}
+
+.chart-filter {
+}
