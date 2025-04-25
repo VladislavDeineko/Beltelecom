@@ -123,9 +123,6 @@ namespace Beltelecom.Migrations
                     b.Property<decimal>("TotalAmount")
                         .HasColumnType("decimal(10,2)");
 
-                    b.Property<int>("UserDealInfoId")
-                        .HasColumnType("int");
-
                     b.Property<string>("UserId")
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
@@ -134,11 +131,27 @@ namespace Beltelecom.Migrations
 
                     b.HasIndex("ProductId");
 
-                    b.HasIndex("UserDealInfoId");
-
                     b.HasIndex("UserId");
 
                     b.ToTable("Orders");
+                });
+
+            modelBuilder.Entity("Beltelecom.Models.PopularProduct", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("ProductId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProductId");
+
+                    b.ToTable("PopularProducts");
                 });
 
             modelBuilder.Entity("Beltelecom.Models.Product", b =>
@@ -529,12 +542,6 @@ namespace Beltelecom.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Beltelecom.Models.UserDealInfo", "UserDealInfo")
-                        .WithMany()
-                        .HasForeignKey("UserDealInfoId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", "User")
                         .WithMany()
                         .HasForeignKey("UserId")
@@ -544,8 +551,17 @@ namespace Beltelecom.Migrations
                     b.Navigation("Product");
 
                     b.Navigation("User");
+                });
 
-                    b.Navigation("UserDealInfo");
+            modelBuilder.Entity("Beltelecom.Models.PopularProduct", b =>
+                {
+                    b.HasOne("Beltelecom.Models.Product", "Product")
+                        .WithMany()
+                        .HasForeignKey("ProductId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Product");
                 });
 
             modelBuilder.Entity("Beltelecom.Models.Product", b =>

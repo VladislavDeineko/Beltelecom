@@ -7,7 +7,7 @@
         <div class="product-image">
             <img src="@Model.ImageUrl" alt="@Model.Name">
         </div>
-        <div class="product-info">
+        <div class="product-main-info">
             <h1 class="product-title">@Model.Name</h1>
 
             <p class="product-monthly-payment">@((Model.Price / Model.InstallmentMonths).ToString("0.00")) руб.</p>
@@ -56,8 +56,7 @@
         <div class="product-info">
             <img id="productImage" src="@Model.ImageUrl" alt="@Model.Name" style="max-width: 100px;">
             <h3 id="productName">@Model.Name</h3>
-            <p id="productPrice">Цена: @Model.Price руб.</p>
-            <p id="installmentMonths">Срок рассрочки: @Model.InstallmentMonths мес.</p>
+            <p id="productPrice">Ежемесячный платеж <b>@((Model.Price / Model.InstallmentMonths).ToString("0.00"))</b> руб. на @Model.InstallmentMonths мес.</p>
         </div>
 
         <div class="order-options">

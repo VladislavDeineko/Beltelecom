@@ -98,16 +98,26 @@
 <button id="updateChart" class="btn btn-primary mb-3">Обновить график</button>
 
 <canvas id="ordersChart" width="400" height="130"></canvas>
+<button class="btn btn-sm btn-outline-primary mt-2" id="exportOrdersChart">Экспортировать</button>
 
 <div class="mt-5">
     <h3>Заказы по категориям товаров</h3>
     <canvas id="ordersByCategoryChart" height="40"></canvas>
+    <button class="btn btn-sm btn-outline-primary mt-2" id="exportCategoryChart">Экспортировать</button>
 </div>
 
 <div class="mt-5">
     <h3>Заказы по брендам</h3>
     <canvas id="ordersByBrandChart" height="40"></canvas>
+    <button class="btn btn-sm btn-outline-primary mt-2" id="exportBrandChart">Экспортировать</button>
 </div>
+
+<div class="mt-5">
+    <h3>Топ-товары</h3>
+    <canvas id="topProductsChart" height="40"></canvas>
+    <button class="btn btn-sm btn-outline-primary mt-2" id="exportTopChart">Экспортировать</button>
+</div>
+
 @section Scripts {
     <script>
         var ordersChart;
@@ -126,12 +136,6 @@
                     var totalOrders = data.totalOrders;
                     var activeOrders = data.activeOrders;
                     var completedOrders = data.completedOrders;
-
-                    // Убираем инвертирование данных
-                    // labels.reverse();  // Удаляем эту строку
-                    // totalOrders.reverse();  // Удаляем эту строку
-                    // activeOrders.reverse();  // Удаляем эту строку
-                    // completedOrders.reverse();  // Удаляем эту строку
 
                     // Обновляем данные на графике
                     ordersChart.data.labels = labels;
@@ -207,13 +211,23 @@
 
             updateChartData($('#startMonth').val(), $('#startYear').val(), $('#endMonth').val(), $('#endYear').val());
         });
+
+        // Экспорт
+        document.getElementById('exportOrdersChart').addEventListener('click', () => {
+            const link = document.createElement('a');
+            link.href = ordersChart.toBase64Image();
+            link.download = 'Статистика_по_заказам.png';
+            link.click();
+        });
     </script>
     <script>
+        let categoryChart, brandChart, topChart;
+
         fetch('/Admin/GetOrdersByCategory')
             .then(response => response.json())
             .then(data => {
                 const ctxCat = document.getElementById('ordersByCategoryChart').getContext('2d');
-                const chart = new Chart(ctxCat, {
+                categoryChart = new Chart(ctxCat, {
                     type: 'bar',
                     data: {
                         labels: data.labels,
@@ -226,23 +240,24 @@
                         }]
                     },
                     options: {
-                        indexAxis: 'y', // Горизонтальный бар
+                        indexAxis: 'y',
                         scales: {
                             x: {
-                                beginAtZero: true
+                                beginAtZero: true,
+                                ticks: {
+                                    stepSize: 1
+                                }
                             }
                         }
                     }
                 });
-            })
-            .catch(error => console.error('Ошибка при загрузке данных по категориям:', error));
-    </script>
-    <script>
+            });
+
         fetch('/Admin/GetOrdersByBrand')
             .then(response => response.json())
             .then(data => {
                 const ctxBrand = document.getElementById('ordersByBrandChart').getContext('2d');
-                const chart = new Chart(ctxBrand, {
+                brandChart = new Chart(ctxBrand, {
                     type: 'bar',
                     data: {
                         labels: data.labels,
@@ -258,13 +273,67 @@
                         indexAxis: 'y',
                         scales: {
                             x: {
-                                beginAtZero: true
+                                beginAtZero: true,
+                                ticks: {
+                                    stepSize: 1
+                                }
                             }
                         }
                     }
                 });
-            })
-            .catch(error => console.error('Ошибка при загрузке данных по брендам:', error));
+            });
+
+        fetch('/Admin/GetTopProducts')
+            .then(response => response.json())
+            .then(data => {
+                const ctxTop = document.getElementById('topProductsChart').getContext('2d');
+                topChart = new Chart(ctxTop, {
+                    type: 'bar',
+                    data: {
+                        labels: data.labels,
+                        datasets: [{
+                            label: 'Количество заказов',
+                            data: data.counts,
+                            backgroundColor: 'rgba(255, 99, 132, 0.6)',
+                            borderColor: 'rgba(255, 99, 132, 1)',
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        indexAxis: 'y',
+                        scales: {
+                            x: {
+                                beginAtZero: true,
+                                ticks: {
+                                    stepSize: 1
+                                }
+                            }
+                        }
+                    }
+                });
+            });
+
+        // Экспорт
+        document.getElementById('exportCategoryChart').addEventListener('click', () => {
+            const link = document.createElement('a');
+            link.href = categoryChart.toBase64Image();
+            link.download = 'Заказы_по_категориям.png';
+            link.click();
+        });
+
+        document.getElementById('exportBrandChart').addEventListener('click', () => {
+            const link = document.createElement('a');
+            link.href = brandChart.toBase64Image();
+            link.download = 'Заказы_по_брендам.png';
+            link.click();
+        });
+
+        document.getElementById('exportTopChart').addEventListener('click', () => {
+            const link = document.createElement('a');
+            link.href = topChart.toBase64Image();
+            link.download = 'Топ_товары.png';
+            link.click();
+        });
     </script>
 
 }

@@ -19,11 +19,10 @@ public class HomeController : Controller
 
     public async Task<IActionResult> Index()
     {
-        // Извлекаем 4 товара с наименьшим количеством на складе
-        var products = await _context.Products
-                                     .OrderBy(p => p.Stock)
-                                     .Take(4)
-                                     .ToListAsync();
+        var popularProductIds = _context.PopularProducts.Select(pp => pp.ProductId).ToList();
+        var products = _context.Products
+                                      .Where(p => popularProductIds.Contains(p.Id))
+                                      .ToList();
 
         // Извлекаем категории 
         var categories = await _context.Categories

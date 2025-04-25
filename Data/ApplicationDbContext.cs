@@ -21,6 +21,7 @@ public class ApplicationDbContext : IdentityDbContext<IdentityUser>
     public DbSet<Order> Orders { get; set; }
     public DbSet<Favorite> Favorites { get; set; }
     public DbSet<ProductSpecification> ProductSpecifications { get; set; }
+    public DbSet<PopularProduct> PopularProducts { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -53,8 +54,6 @@ public class ApplicationDbContext : IdentityDbContext<IdentityUser>
 
         base.OnModelCreating(modelBuilder);  // Вызов базового метода для выполнения любых дополнительных настроек
     }
-
-
 
     //protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     //{

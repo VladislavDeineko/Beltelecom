@@ -934,6 +934,28 @@ namespace Beltelecom.Controllers
             return Json(new { labels, counts });
         }
 
+        [HttpGet]
+        public JsonResult GetTopProducts()
+        {
+            var topProducts = _context.Orders
+                .Where(o => o.Product != null)
+                .GroupBy(o => o.Product.Name)
+                .Select(g => new
+                {
+                    ProductName = g.Key,
+                    Count = g.Count()
+                })
+                .OrderByDescending(x => x.Count)
+                .Take(10)
+                .ToList();
+
+            return Json(new
+            {
+                labels = topProducts.Select(x => x.ProductName),
+                counts = topProducts.Select(x => x.Count)
+            });
+        }
+
         //Категории/бренды
         public IActionResult ManageCategoriesAndBrands()
         {

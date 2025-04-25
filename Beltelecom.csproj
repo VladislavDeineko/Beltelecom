@@ -18,9 +18,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="Areas\Admin\Controllers\" />
+    <Folder Include="Areas\Admin\Views\" />
     <Folder Include="Data\Migrations\" />
     <Folder Include="Services\" />
-    <Folder Include="Views\Orders\" />
     <Folder Include="wwwroot\images\" />
   </ItemGroup>
 

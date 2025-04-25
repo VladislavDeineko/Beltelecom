@@ -1,0 +1,130 @@
+﻿@{
+    ViewData["Title"] = "Популярные товары";
+}
+
+<!-- Список текущих популярных товаров -->
+<div id="currentPopularProductsSection">
+    <h3>Текущие популярные товары</h3>
+    <div class="row">
+        @foreach (var popularProduct in Model)
+        {
+            <div class="col-md-3">
+                <div class="product-card">
+                    <img src="@popularProduct.ImageUrl" class="product-img" alt="@popularProduct.Name">
+                    <div class="product-body">
+                        <h5 class="product-title">@popularProduct.Name</h5>
+                        <p>@popularProduct.Description</p>
+                        <form action="/PopularProducts/Remove" method="post">
+                            <input type="hidden" name="productId" value="@popularProduct.Id" />
+                            <button type="submit" class="btn btn-danger remove-btn">Удалить</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+<!-- Поиск товаров -->
+<div class="popular-search">
+    <h3>Поиск товаров</h3>
+    <input type="text" id="searchQueryField" class="search-input form-control" placeholder="Поиск товара..." />
+    <ul id="searchResultsList" class="search-results list-group mt-2"></ul>
+</div>
+
+<!-- Кнопка для добавления товара в популярные -->
+<div class="popular-add">
+    <h3 class="text-center mb-4">Добавить товар в популярные</h3>
+    <div id="selectedProductsSection" class="mb-4">
+        <!-- Изначально выводим текущие популярные товары -->
+        @foreach (var popularProduct in Model)
+        {
+            <div class="d-flex justify-content-between align-items-center selected-product mb-3 p-3 border rounded shadow-sm" data-id="@popularProduct.Id">
+                <span class="product-name">@popularProduct.Name</span>
+                <button class="btn btn-danger btn-sm removeSelectedProductBtn">Удалить</button>
+            </div>
+        }
+    </div>
+    <button id="savePopularProductsBtn" class="btn btn-primary btn-lg">Сохранить изменения</button>
+</div>
+
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            // Поиск товаров
+            $('#searchQueryField').on('input', function () {
+                var query = $(this).val();
+                if (query.length >= 3) {
+                    $.get("/PopularProducts/Search", { query: query }, function (data) {
+                        $('#searchResultsList').empty();
+                        data.forEach(function (product) {
+                            $('#searchResultsList').append(
+                                '<li class="list-group-item d-flex justify-content-between align-items-center">' +
+                                product.name +
+                                '<button class="btn btn-success btn-sm addProductBtn" data-id="' + product.id + '" data-name="' + product.name + '">Добавить</button>' +
+                                '</li>');
+                        });
+                    });
+                }
+            });
+
+            // Добавление товара в список популярных
+            $('#searchResultsList').on('click', '.addProductBtn', function () {
+                var productId = $(this).data('id');
+                var productName = $(this).data('name');
+
+                // Проверка, не превышает ли количество выбранных товаров 4
+                if ($('#selectedProductsSection .selected-product').length >= 4) {
+                    alert("Вы не можете добавить более 4 товаров!");
+                    return;
+                }
+
+                // Проверка на дублирование товара
+                var alreadyAdded = false;
+                $('#selectedProductsSection .selected-product').each(function () {
+                    if ($(this).data('id') === productId) {
+                        alreadyAdded = true;
+                        return false;  // Прерываем цикл
+                    }
+                });
+
+                if (alreadyAdded) {
+                    alert("Этот товар уже добавлен в список!");
+                    return;
+                }
+
+                // Добавляем товар в выбранные
+                $('#selectedProductsSection').append(
+                    '<div class="d-flex justify-content-between align-items-center selected-product" data-id="' + productId + '">' +
+                    '<span>' + productName + '</span>' +
+                    '<button class="btn btn-danger btn-sm removeSelectedProductBtn">Удалить</button>' +
+                    '</div>'
+                );
+            });
+
+            // Удаление товара из выбранных
+            $('#selectedProductsSection').on('click', '.removeSelectedProductBtn', function () {
+                $(this).parent().remove();
+            });
+
+            // Сохранение популярных товаров
+            $('#savePopularProductsBtn').click(function () {
+                // Сначала удаляем все текущие популярные товары
+                $.post('/PopularProducts/Clear', function () {
+                    // После того как текущий список очищен, добавляем новые товары
+                    var selectedProductIds = [];
+                    $('#selectedProductsSection .selected-product').each(function () {
+                        selectedProductIds.push($(this).data('id'));
+                    });
+
+                    selectedProductIds.forEach(function (productId) {
+                        $.post('/PopularProducts/Add', { productId: productId });
+                    });
+
+                    alert("Популярные товары сохранены!");
+                });
+            });
+        });
+    </script>
+}
