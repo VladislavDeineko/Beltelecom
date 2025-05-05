@@ -602,8 +602,8 @@ namespace Beltelecom.Controllers
             worksheet.Cell(1, 1).Value = "Название";
             worksheet.Cell(1, 2).Value = "Категория";
             worksheet.Cell(1, 3).Value = "Бренд";
-            worksheet.Cell(1, 4).Value = "Цена";
-            worksheet.Cell(1, 5).Value = "На складе";
+            worksheet.Cell(1, 4).Value = "Цена, руб";
+            worksheet.Cell(1, 5).Value = "На складе, шт";
 
             for (int i = 0; i < products.Count; i++)
             {
@@ -662,9 +662,9 @@ namespace Beltelecom.Controllers
 
             worksheet.Cell(1, 1).Value = "ФИО";
             worksheet.Cell(1, 2).Value = "Товар";
-            worksheet.Cell(1, 3).Value = "Сумма";
+            worksheet.Cell(1, 3).Value = "Сумма, руб";
             worksheet.Cell(1, 4).Value = "Дата заказа";
-            worksheet.Cell(1, 5).Value = "Рассрочка";
+            worksheet.Cell(1, 5).Value = "Рассрочка, мес";
             worksheet.Cell(1, 6).Value = "Настройка";
 
             for (int i = 0; i < orders.Count; i++)
@@ -694,6 +694,8 @@ namespace Beltelecom.Controllers
 
         public async Task<IActionResult> ExportActiveOrders(string searchString, int? month, int? year)
         {
+            bool isFiltered = Request.Query.ContainsKey("filtered");
+
             var ordersQuery = _context.Orders
                 .Where(o => o.IsActive && !o.IsCompleted)
                 .Include(o => o.Product)
@@ -703,20 +705,20 @@ namespace Beltelecom.Controllers
             var userDealInfos = await _context.UserDealInfos.ToListAsync();
             var userFullNames = userDealInfos.ToDictionary(
                 u => u.UserId,
-                u => $"{u.LastName} {u.FirstName} {u.MiddleName}"
+                u => new { FullName = $"{u.LastName} {u.FirstName} {u.MiddleName}", u.PhoneNumber }
             );
 
             if (!string.IsNullOrEmpty(searchString))
             {
                 var matchingUserIds = userFullNames
-                    .Where(pair => pair.Value.Contains(searchString, StringComparison.OrdinalIgnoreCase))
+                    .Where(pair => pair.Value.FullName.Contains(searchString, StringComparison.OrdinalIgnoreCase))
                     .Select(pair => pair.Key)
                     .ToList();
 
                 ordersQuery = ordersQuery.Where(o => matchingUserIds.Contains(o.UserId));
             }
 
-            if (month.HasValue && year.HasValue)
+            if (isFiltered)
             {
                 ordersQuery = ordersQuery.Where(o => o.OrderDate.Month == month && o.OrderDate.Year == year);
             }
@@ -726,33 +728,50 @@ namespace Beltelecom.Controllers
             using var workbook = new XLWorkbook();
             var worksheet = workbook.Worksheets.Add("Активные заказы");
 
+            // Заголовки
             worksheet.Cell(1, 1).Value = "ФИО";
-            worksheet.Cell(1, 2).Value = "Товар";
-            worksheet.Cell(1, 3).Value = "Сумма";
-            worksheet.Cell(1, 4).Value = "Дата заказа";
-            worksheet.Cell(1, 5).Value = "Рассрочка";
-            worksheet.Cell(1, 6).Value = "Настройка";
+            worksheet.Cell(1, 2).Value = "Телефон";
+            worksheet.Cell(1, 3).Value = "Товар";
+            worksheet.Cell(1, 4).Value = "Сумма, руб";
+            worksheet.Cell(1, 5).Value = "Выплачено, руб";
+            worksheet.Cell(1, 6).Value = "Рассрочка, мес";
+            worksheet.Cell(1, 7).Value = "Дата заказа";
+            worksheet.Cell(1, 8).Value = "Гарантия";
 
             for (int i = 0; i < orders.Count; i++)
             {
                 var order = orders[i];
-                var fullName = userFullNames.TryGetValue(order.UserId, out var name) ? name : "Нет данных";
+                var row = i + 2;
 
-                worksheet.Cell(i + 2, 1).Value = fullName;
-                worksheet.Cell(i + 2, 2).Value = order.Product?.Name ?? "";
-                worksheet.Cell(i + 2, 3).Value = $"{order.TotalAmount:0.00} руб.";
-                worksheet.Cell(i + 2, 4).Value = order.OrderDate.ToString("dd.MM.yyyy");
-                worksheet.Cell(i + 2, 5).Value = order.InstallmentMonths > 0 ? $"{order.InstallmentMonths} мес." : "-";
-                worksheet.Cell(i + 2, 6).Value = order.RequiresSetup ? "Да" : "Нет";
+                var userInfo = userFullNames.TryGetValue(order.UserId, out var info)
+                ? info
+                : new { FullName = "Нет данных", PhoneNumber = "-" };
+
+                var warrantyEnd = order.Product?.WarrantyMonths > 0
+                    ? order.OrderDate.AddMonths(order.Product.WarrantyMonths)
+                    : (DateTime?)null;
+
+                worksheet.Cell(row, 1).Value = userInfo.FullName;
+                worksheet.Cell(row, 2).Value = userInfo.PhoneNumber;
+                worksheet.Cell(row, 3).Value = order.Product?.Name ?? "-";
+                worksheet.Cell(row, 4).Value = order.TotalAmount;
+                worksheet.Cell(row, 5).Value = order.PaidAmount;
+                worksheet.Cell(row, 6).Value = order.InstallmentMonths > 0 ? order.InstallmentMonths : 0;
+                worksheet.Cell(row, 7).Value = order.OrderDate.ToString("dd.MM.yyyy");
+                worksheet.Cell(row, 8).Value = warrantyEnd.HasValue ? $"до {warrantyEnd:dd.MM.yyyy}" : "-";
             }
 
             using var stream = new MemoryStream();
             workbook.SaveAs(stream);
             stream.Position = 0;
 
+            var fileName = (isFiltered)
+                ? $"Активные заказы за {month}.{year}.xlsx"
+                : "Все активные заказы.xlsx";
+
             return File(stream.ToArray(),
-                        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-                        $"Активные заказы за {month}.{year}.xlsx");
+                "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                fileName);
         }
 
         public async Task<IActionResult> ExportCompletedOrders(string searchString, int? month, int? year)
@@ -791,9 +810,9 @@ namespace Beltelecom.Controllers
 
             worksheet.Cell(1, 1).Value = "ФИО";
             worksheet.Cell(1, 2).Value = "Товар";
-            worksheet.Cell(1, 3).Value = "Сумма";
+            worksheet.Cell(1, 3).Value = "Сумма, руб";
             worksheet.Cell(1, 4).Value = "Дата заказа";
-            worksheet.Cell(1, 5).Value = "Рассрочка";
+            worksheet.Cell(1, 5).Value = "Рассрочка, мес";
             worksheet.Cell(1, 6).Value = "Настройка";
 
             for (int i = 0; i < orders.Count; i++)

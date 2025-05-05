@@ -17,11 +17,11 @@ namespace Beltelecom.Models
         public string? Description { get; set; }
 
         [Required]
-        [Display(Name = "Цена")]
+        [Display(Name = "Цена, руб.")]
         public decimal Price { get; set; }
 
         [Required]
-        [Display(Name = "В наличии (шт.)")]
+        [Display(Name = "В наличии, шт.)")]
         public int Stock { get; set; }
 
         [Required]
@@ -41,10 +41,10 @@ namespace Beltelecom.Models
         [Display(Name = "Изображение")]
         public string? ImageUrl { get; set; }
 
-        [Display(Name = "Гарантия (мес.)")]
+        [Display(Name = "Гарантия, мес.")]
         public int WarrantyMonths { get; set; }
 
-        [Display(Name = "Рассрочка (мес.)")]
+        [Display(Name = "Рассрочка, мес.")]
         public int InstallmentMonths { get; set; }
 
         [Display(Name = "Дата добавления")]
