@@ -9,6 +9,7 @@ using Beltelecom.Models.ViewModels;
 using static NuGet.Packaging.PackagingConstants;
 using ClosedXML.Excel;
 using DocumentFormat.OpenXml.Drawing.Charts;
+using System.Diagnostics;
 
 namespace Beltelecom.Controllers
 {
@@ -872,6 +873,31 @@ namespace Beltelecom.Controllers
             });
         }
 
+        [HttpGet]
+        public async Task<IActionResult> GetDashboardData(DateTime startDate, DateTime endDate)
+        {
+            var ordersInRange = await _context.Orders
+                .Where(o => o.OrderDate >= startDate && o.OrderDate <= endDate)
+                .ToListAsync();
+
+            var activeOrders = ordersInRange.Count(o => o.IsActive);
+            var newOrdersThisMonth = ordersInRange.Count(o =>
+                o.OrderDate.Month == DateTime.Now.Month && o.OrderDate.Year == DateTime.Now.Year);
+
+            var averageCheck = ordersInRange.Any() ? ordersInRange.Average(o => o.TotalAmount) : 0;
+            var totalRevenue = ordersInRange.Sum(o => o.TotalAmount);
+
+            // Можем добавить и другие метрики позже
+
+            return Json(new
+            {
+                activeOrders,
+                newOrdersThisMonth,
+                averageCheck,
+                totalRevenue
+                // Остальные метрики и данные для графиков добавим позже
+            });
+        }
 
         public async Task<IActionResult> Statistics()
         {
@@ -912,6 +938,368 @@ namespace Beltelecom.Controllers
 
             return View(model);
         }
+
+        [HttpGet]
+        public IActionResult GetRevenueByMonth(string startDate, string endDate)
+        {
+            // Преобразуем строки в даты
+            DateTime start = DateTime.Parse(startDate);
+            DateTime end = DateTime.Parse(endDate);
+
+            // Получаем заказы в указанном диапазоне
+            var orders = _context.Orders
+                .Where(o => o.OrderDate >= start && o.OrderDate <= end && o.IsCompleted)
+                .ToList();
+
+            // Группируем по месяцам и рассчитываем выручку
+            var monthlyRevenue = orders
+                .GroupBy(o => new { o.OrderDate.Year, o.OrderDate.Month })
+                .Select(g => new
+                {
+                    YearMonth = new DateTime(g.Key.Year, g.Key.Month, 1),
+                    Revenue = g.Sum(o => o.TotalAmount)
+                })
+                .OrderBy(g => g.YearMonth)
+                .ToList();
+
+            // Формируем результат для графика
+            var result = new
+            {
+                months = monthlyRevenue.Select(r => r.YearMonth.ToString("MMMM yyyy")).ToList(),
+                revenue = monthlyRevenue.Select(r => r.Revenue).ToList()
+            };
+
+            return Json(result);
+        }
+
+        [HttpGet]
+        public IActionResult GetRevenueByCategory(string startDate, string endDate)
+        {
+            DateTime start = DateTime.Parse(startDate);
+            DateTime end = DateTime.Parse(endDate);
+
+            var categoriesRevenue = _context.Orders
+                .Where(o => o.OrderDate >= start && o.OrderDate <= end && o.IsCompleted)
+                .GroupBy(o => o.Product.CategoryId)
+                .Select(g => new
+                {
+                    Category = g.FirstOrDefault().Product.Category.Name, // Используем имя категории
+                    Revenue = g.Sum(o => o.TotalAmount)
+                })
+                .OrderByDescending(g => g.Revenue)
+                .ToList();
+
+            var result = new
+            {
+                labels = categoriesRevenue.Select(r => r.Category).ToList(),
+                data = categoriesRevenue.Select(r => r.Revenue).ToList()
+            };
+
+            return Json(result);
+        }
+
+        [HttpGet]
+        public IActionResult GetRevenueByBrand(string startDate, string endDate)
+        {
+            DateTime start = DateTime.Parse(startDate);
+            DateTime end = DateTime.Parse(endDate);
+
+            var brandsRevenue = _context.Orders
+                .Where(o => o.OrderDate >= start && o.OrderDate <= end && o.IsCompleted)
+                .GroupBy(o => o.Product.BrandId)
+                .Select(g => new
+                {
+                    Brand = g.FirstOrDefault().Product.Brand.Name, // Используем имя бренда
+                    Revenue = g.Sum(o => o.TotalAmount)
+                })
+                .OrderByDescending(g => g.Revenue)
+                .ToList();
+
+            var result = new
+            {
+                labels = brandsRevenue.Select(r => r.Brand).ToList(),
+                data = brandsRevenue.Select(r => r.Revenue).ToList()
+            };
+
+            return Json(result);
+        }
+
+        // Метод для получения количества товаров на складе по категориям
+        public JsonResult GetStockByCategory(DateTime startDate, DateTime endDate)
+        {
+            var stockByCategory = _context.Products
+                .GroupBy(p => p.Category.Name)
+                .Select(g => new
+                {
+                    Category = g.Key,
+                    Stock = g.Sum(p => p.Stock)  // Суммируем количество товаров на складе
+                })
+                .ToList();
+
+            return Json(new { labels = stockByCategory.Select(x => x.Category).ToList(), data = stockByCategory.Select(x => x.Stock).ToList() });
+        }
+
+        // Метод для получения количества товаров на складе по брендам
+        public JsonResult GetStockByBrand(DateTime startDate, DateTime endDate)
+        {
+            var stockByBrand = _context.Products
+                .GroupBy(p => p.Brand.Name)
+                .Select(g => new
+                {
+                    Brand = g.Key,
+                    Stock = g.Sum(p => p.Stock)  // Суммируем количество товаров на складе
+                })
+                .ToList();
+
+            return Json(new { labels = stockByBrand.Select(x => x.Brand).ToList(), data = stockByBrand.Select(x => x.Stock).ToList() });
+        }
+
+        [HttpGet]
+        public IActionResult GetWeeklyOrders(DateTime endDate)
+        {
+            DateTime startDate = endDate.Date.AddDays(-6);
+
+            var days = Enumerable.Range(0, 7)
+                .Select(offset => startDate.AddDays(offset))
+                .ToList();
+
+            var orders = _context.Orders
+                .Where(o => o.OrderDate.Date >= startDate && o.OrderDate.Date <= endDate)
+                .GroupBy(o => o.OrderDate.Date)
+                .Select(g => new
+                {
+                    Date = g.Key,
+                    Count = g.Count()
+                })
+                .ToList();
+
+            var result = new
+            {
+                labels = days.Select(d => d.ToString("dd.MM")),
+                values = days.Select(d =>
+                    orders.FirstOrDefault(o => o.Date.Date == d.Date)?.Count ?? 0
+                )
+            };
+            return Json(result);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> ExportDashboardToExcel(DateTime startDate, DateTime endDate)
+        {
+            var ordersInRange = await _context.Orders
+                .Where(o => o.OrderDate >= startDate && o.OrderDate <= endDate)
+                .ToListAsync();
+
+            var activeOrders = ordersInRange.Count(o => o.IsActive);
+            var newOrdersThisMonth = ordersInRange.Count(o =>
+                o.OrderDate.Month == DateTime.Now.Month && o.OrderDate.Year == DateTime.Now.Year);
+
+            var averageCheck = ordersInRange.Any()
+                ? (ordersInRange.Average(o => o.TotalAmount).ToString("F2") + " руб.")
+                : "0.00 руб.";
+            var totalRevenue = ordersInRange.Any()
+                ? (ordersInRange.Sum(o => o.TotalAmount).ToString("F2") + " руб.")
+                : "0.00 руб.";
+            var completedOrders = ordersInRange.Where(o => o.IsCompleted).ToList();
+
+            var monthlyRevenueRaw = completedOrders
+                .GroupBy(o => new { o.OrderDate.Year, o.OrderDate.Month })
+                .Select(g => new
+                {
+                    YearMonth = new DateTime(g.Key.Year, g.Key.Month, 1),
+                    Revenue = g.Sum(o => o.TotalAmount)
+                })
+                .OrderBy(g => g.YearMonth)
+                .ToList();
+            var monthlyRevenue = monthlyRevenueRaw
+                .Select(g => new
+                {
+                    g.YearMonth,
+                    Revenue = g.Revenue.ToString("F2")
+                })
+                .ToList();
+
+            var categoriesRevenueRaw = await _context.Orders
+                .Where(o => o.OrderDate >= startDate && o.OrderDate <= endDate && o.IsCompleted)
+                .GroupBy(o => o.Product.CategoryId)
+                .Select(g => new
+                {
+                    Category = g.FirstOrDefault().Product.Category.Name,
+                    Revenue = g.Sum(o => o.TotalAmount)
+                })
+                .OrderByDescending(g => g.Revenue)
+                .ToListAsync();
+            // форматирование после выборки
+            var categoriesRevenue = categoriesRevenueRaw
+                .Select(g => new
+                {
+                    g.Category,
+                    Revenue = g.Revenue.ToString("F2")
+                })
+                .ToList();
+
+            var brandsRevenueRaw = await _context.Orders
+                .Where(o => o.OrderDate >= startDate && o.OrderDate <= endDate && o.IsCompleted)
+                .GroupBy(o => o.Product.BrandId)
+                .Select(g => new
+                {
+                    Brand = g.FirstOrDefault().Product.Brand.Name,
+                    Revenue = g.Sum(o => o.TotalAmount)
+                })
+                .OrderByDescending(g => g.Revenue)
+                .ToListAsync();
+            var brandsRevenue = brandsRevenueRaw
+                .Select(g => new
+                {
+                    g.Brand,
+                    Revenue = g.Revenue.ToString("F2")
+                })
+                .ToList();
+
+            var stockByCategory = await _context.Products
+                .GroupBy(p => p.Category.Name)
+                .Select(g => new
+                {
+                    Category = g.Key,
+                    Stock = g.Sum(p => p.Stock)
+                })
+                .ToListAsync();
+
+            var stockByBrand = await _context.Products
+                .GroupBy(p => p.Brand.Name)
+                .Select(g => new
+                {
+                    Brand = g.Key,
+                    Stock = g.Sum(p => p.Stock)
+                })
+                .ToListAsync();
+
+            // Данные за последнюю неделю
+            var startOfWeek = endDate.AddDays(-6);
+            var weeklyOrders = await _context.Orders
+                .Where(o => o.OrderDate.Date >= startOfWeek && o.OrderDate.Date <= endDate)
+                .GroupBy(o => o.OrderDate.Date)
+                .Select(g => new
+                {
+                    Date = g.Key,
+                    Count = g.Count()
+                })
+                .ToListAsync();
+
+            var weeklyLabels = Enumerable.Range(0, 7)
+                .Select(offset => startOfWeek.AddDays(offset).ToString("dd.MM"))
+                .ToList();
+
+            var weeklyValues = weeklyLabels.Select(label =>
+                weeklyOrders.FirstOrDefault(o => o.Date.ToString("dd.MM") == label)?.Count ?? 0
+            ).ToList();
+
+            using var workbook = new XLWorkbook();
+
+            // Лист 1: метрики
+            var metricsSheet = workbook.Worksheets.Add("Метрики");
+            metricsSheet.Cell(1, 1).Value = "Период";
+            metricsSheet.Cell(1, 2).Value = $"{startDate:dd.MM.yyyy} - {endDate:dd.MM.yyyy}";
+            metricsSheet.Range("A1:B1").Style.Font.SetBold(true);
+
+            metricsSheet.Cell(3, 1).Value = "Метрика";
+            metricsSheet.Cell(3, 2).Value = "Значение";
+
+            metricsSheet.Cell(4, 1).Value = "Активные заказы";
+            metricsSheet.Cell(4, 2).Value = activeOrders;
+
+            metricsSheet.Cell(5, 1).Value = "Новые заказы в этом месяце";
+            metricsSheet.Cell(5, 2).Value = newOrdersThisMonth;
+
+            metricsSheet.Cell(6, 1).Value = "Средний чек";
+            metricsSheet.Cell(6, 2).Value = averageCheck;
+
+            metricsSheet.Cell(7, 1).Value = "Общая выручка";
+            metricsSheet.Cell(7, 2).Value = totalRevenue;
+
+            // Лист 2: выручка по месяцам
+            var revenueSheet = workbook.Worksheets.Add("Выручка по месяцам");
+            revenueSheet.Cell(1, 1).Value = "Дата";
+            revenueSheet.Cell(1, 2).Value = "Выручка, руб.";
+            revenueSheet.Range("A1:B1").Style.Font.SetBold(true);
+
+            for (int i = 0; i < monthlyRevenue.Count; i++)
+            {
+                revenueSheet.Cell(i + 2, 1).Value = monthlyRevenue[i].YearMonth.ToString("MMMM yyyy");
+                revenueSheet.Cell(i + 2, 2).Value = monthlyRevenue[i].Revenue;
+            }
+
+            // Лист 3: выручка по категориям
+            var categoryRevenueSheet = workbook.Worksheets.Add("Выручка по категориям");
+            categoryRevenueSheet.Cell(1, 1).Value = "Категория";
+            categoryRevenueSheet.Cell(1, 2).Value = "Выручка, руб.";
+            // Сделать заголовки жирными
+            categoryRevenueSheet.Range("A1:B1").Style.Font.SetBold(true);
+
+            for (int i = 0; i < categoriesRevenue.Count; i++)
+            {
+                categoryRevenueSheet.Cell(i + 2, 1).Value = categoriesRevenue[i].Category;
+                categoryRevenueSheet.Cell(i + 2, 2).Value = categoriesRevenue[i].Revenue;
+            }
+
+            // Лист 4: выручка по брендам
+            var brandRevenueSheet = workbook.Worksheets.Add("Выручка по брендам");
+            brandRevenueSheet.Cell(1, 1).Value = "Бренд";
+            brandRevenueSheet.Cell(1, 2).Value = "Выручка, руб.";
+            brandRevenueSheet.Range("A1:B1").Style.Font.SetBold(true);
+
+            for (int i = 0; i < brandsRevenue.Count; i++)
+            {
+                brandRevenueSheet.Cell(i + 2, 1).Value = brandsRevenue[i].Brand;
+                brandRevenueSheet.Cell(i + 2, 2).Value = brandsRevenue[i].Revenue;
+            }
+
+            // Лист 5: товары на складе по категориям
+            var stockByCategorySheet = workbook.Worksheets.Add("Запасы (по категориям)");
+            stockByCategorySheet.Cell(1, 1).Value = "Категория";
+            stockByCategorySheet.Cell(1, 2).Value = "Количество товаров, шт.";
+            stockByCategorySheet.Range("A1:B1").Style.Font.SetBold(true);
+
+            for (int i = 0; i < stockByCategory.Count; i++)
+            {
+                stockByCategorySheet.Cell(i + 2, 1).Value = stockByCategory[i].Category;
+                stockByCategorySheet.Cell(i + 2, 2).Value = stockByCategory[i].Stock;
+            }
+
+            // Лист 6: товары на складе по брендам
+            var stockByBrandSheet = workbook.Worksheets.Add("Запасы (по брендам)");
+            stockByBrandSheet.Cell(1, 1).Value = "Бренд";
+            stockByBrandSheet.Cell(1, 2).Value = "Количество товаров, шт.";
+            stockByBrandSheet.Range("A1:B1").Style.Font.SetBold(true);
+
+            for (int i = 0; i < stockByBrand.Count; i++)
+            {
+                stockByBrandSheet.Cell(i + 2, 1).Value = stockByBrand[i].Brand;
+                stockByBrandSheet.Cell(i + 2, 2).Value = stockByBrand[i].Stock;
+            }
+
+            // Лист 7: заказы за последнюю неделю
+            var weeklyOrdersSheet = workbook.Worksheets.Add("Заказы за неделю");
+            weeklyOrdersSheet.Cell(1, 1).Value = "Дата";
+            weeklyOrdersSheet.Cell(1, 2).Value = "Количество заказов";
+            weeklyOrdersSheet.Range("A1:B1").Style.Font.SetBold(true);
+
+            for (int i = 0; i < weeklyLabels.Count; i++)
+            {
+                weeklyOrdersSheet.Cell(i + 2, 1).Value = weeklyLabels[i];
+                weeklyOrdersSheet.Cell(i + 2, 2).Value = weeklyValues[i];
+            }
+
+            using var stream = new MemoryStream();
+            workbook.SaveAs(stream);
+            stream.Position = 0;
+
+            var fileName = $"Статистика с_{startDate:yyyyMMdd}по_{endDate:yyyyMMdd}.xlsx";
+            return File(stream.ToArray(),
+                "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                fileName);
+        }
+
 
         [HttpGet]
         public async Task<IActionResult> GetOrdersByCategory()

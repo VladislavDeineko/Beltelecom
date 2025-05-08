@@ -11,5 +11,4 @@
         public List<string> Months { get; set; } 
         public List<int> OrdersByMonth { get; set; }  // Количество заказов по месяцам
     }
-
 }

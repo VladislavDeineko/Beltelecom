@@ -132,11 +132,11 @@ namespace Beltelecom.Controllers
             try
             {
                 await _context.SaveChangesAsync();
-                TempData["SuccessMessageDeal"] = "Паспортные данные успешно обновлены.";
+                TempData["SuccessMessageDeal"] = "Личные данные успешно обновлены.";
             }
             catch
             {
-                TempData["ErrorMessageDeal"] = "Ошибка при сохранении паспортных данных.";
+                TempData["ErrorMessageDeal"] = "Ошибка при сохранении личных данных.";
             }
             return RedirectToAction("Index");
         }

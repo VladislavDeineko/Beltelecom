@@ -5,57 +5,128 @@
 @{
     ViewData["Title"] = "Статистика";
 }
+<div class="container mt-4 p-3 rounded shadow-sm" style="background-color: #fdfdfe; border: 1px solid #e9ecef;">
+        <form id="dateRangeForm" class="mb-4">
+            <div class="d-flex align-items-end gap-3 flex-wrap">
+                <h3 class="mt-4">Период:</h3>
+                <div>
+                    <label for="startDate" class="form-label">С</label>
+                </div>
+                <div>
+                    <input type="date" id="startDate" class="form-control" required />
+                </div>
+                <div>
+                    <label for="endDate" class="form-label">По</label>
+                </div>
+                <div>
+                    <input type="date" id="endDate" class="form-control" required />
+                </div>
+                <div>
+                    <button type="submit" class="btn btn-primary">Применить</button>
+                </div>
+            </div>
+        </form>
 
-<h2 class="mb-4">Общая статистика</h2>
-
-<div class="row">
-    <div class="col-md-3">
-        <div class="card text-white bg-primary mb-3">
-            <div class="card-body">
-                <h5 class="card-title">Всего заказов</h5>
-                <p class="card-text fs-4">@Model.TotalOrders</p>
+        <!-- Карточки с метриками -->
+        <div class="row" id="metricsRow">
+            <div class="col-md-3">
+                <div class="card text-white bg-primary mb-3">
+                    <div class="card-header">Активные заказы</div>
+                    <div class="card-body">
+                        <h5 class="card-title" id="activeOrders">0</h5>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card text-white bg-danger mb-3">
+                    <div class="card-header">Новые заказы в этом месяце</div>
+                    <div class="card-body">
+                        <h5 class="card-title" id="newOrdersThisMonth">0</h5>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card text-white bg-warning mb-3">
+                    <div class="card-header">Средний чек</div>
+                    <div class="card-body">
+                        <h5 class="card-title" id="averageCheck">0</h5>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card text-white bg-success mb-3">
+                    <div class="card-header">Общая выручка</div>
+                    <div class="card-body">
+                        <h5 class="card-title" id="totalRevenue">0</h5>
+                    </div>
+                </div>
             </div>
         </div>
-    </div>
+        <!-- График "Выручка по месяцам" -->
+        <h3 class="mt-4 text-center">График "Выручка по месяцам"</h3>
+        <div class="row justify-content-center">
+        <div class="col-md-10 col-lg-8 p-3 rounded shadow-sm" style="background-color: #f8f9fa;">
+            <div class="revenueByMonthChart-container">
+                <canvas id="revenueByMonthChart"></canvas>
+            </div>
+            </div>
+        </div>
+        <!-- Диаграммы выручки -->
+        <div class="row mb-5">
+            <div class="col-md-6">
+                <div class="p-3 rounded shadow-sm" style="background-color: #f8f9fa;">
+                    <h4 class="text-center mt-2">Диаграмма "Выручка по категориям"</h4>
+                    <div style="position: relative; height: 300px;">
+                        <canvas id="categoryRevenueChart" style="display: block; margin: 0 auto;"></canvas>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="p-3 rounded shadow-sm" style="background-color: #f8f9fa;">
+                    <h4 class="text-center mt-2">Диаграмма "Выручка по брендам"</h4>
+                    <div style="position: relative; height: 300px;">
+                        <canvas id="brandRevenueChart" style="display: block; margin: 0 auto;"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
 
-    <div class="col-md-3">
-        <div class="card text-white bg-warning mb-3">
-            <div class="card-body">
-                <h5 class="card-title">Активные заказы</h5>
-                <p class="card-text fs-4">@Model.ActiveOrders</p>
+        <!-- Диаграммы товаров на складе -->
+        <div class="row mb-5">
+            <div class="col-md-6">
+                <div class="p-3 rounded shadow-sm" style="background-color: #f8f9fa;">
+                    <h4 class="text-center mt-2">Диаграмма "Товары на складе (по категории)"</h4>
+                    <div style="position: relative; height: 300px;">
+                        <canvas id="categoryStockChart" style="display: block; margin: 0 auto;"></canvas>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="p-3 rounded shadow-sm" style="background-color: #f8f9fa;">
+                    <h4 class="text-center mt-2">Диаграмма "Товары на складе (по бренду)"</h4>
+                    <div style="position: relative; height: 300px;">
+                        <canvas id="brandStockChart" style="display: block; margin: 0 auto;"></canvas>
+                    </div>
+                </div>
             </div>
         </div>
-    </div>
-
-    <div class="col-md-3">
-        <div class="card text-white bg-success mb-3">
-            <div class="card-body">
-                <h5 class="card-title">Завершенные заказы</h5>
-                <p class="card-text fs-4">@Model.CompletedOrders</p>
+        <!-- График заказов за последнюю неделю -->
+        <div class="row mb-5">
+            <div class="col-12">
+                <div class="p-3 rounded shadow-sm" style="background-color: #f8f9fa;">
+                    <h4 class="text-center mt-2">Заказы за последнюю неделю</h4>
+                    <div style="position: relative; height: 400px;">
+                        <canvas id="weeklyOrdersChart"></canvas>
+                    </div>
+                </div>
             </div>
         </div>
-    </div>
-
-    <div class="col-md-3">
-        <div class="card text-white bg-info mb-3">
-            <div class="card-body">
-                <h5 class="card-title">Новых в этом месяце</h5>
-                <p class="card-text fs-4">@Model.NewOrdersThisMonth</p>
-            </div>
-        </div>
-    </div>
-    <div class="col-md-3">
-        <div class="card text-white bg-info mb-3 charts-card">
-            <div class="card-header">Средняя сумма заказа</div>
-            <div class="card-body">
-                <h5 class="card-title">@Model.AverageOrderAmount.ToString("0.00") руб.</h5>
-            </div>
-        </div>
+    <div class="mt-4">
+        <button id="exportButton" class="btn btn-success">Экспортировать в Excel</button>
     </div>
 </div>
 
-<h3 class="mt-4">График "Заказы по месяцам"</h3>
-
+@* <h3 class="mt-4">График "Заказы по месяцам"</h3>
 <div class="row mb-3 chart-filter">
     <div class="col-md-3">
         <label for="startMonth">Начало периода</label>
@@ -98,28 +169,481 @@
 <button id="updateChart" class="btn btn-primary mb-3">Обновить график</button>
 
 <canvas id="ordersChart" width="400" height="130"></canvas>
-<button class="btn btn-sm btn-outline-primary mt-2" id="exportOrdersChart">Экспортировать</button>
+<button class="btn btn-sm btn-outline-primary mt-2" id="exportOrdersChart">Экспортировать</button> *@
+<div class="col-12 p-3 rounded shadow-sm" style="background-color: #f8f9fa; margin-top: 15px;">
+    <div class="mt-5">
+        <h3>Заказы по категориям товаров</h3>
+        <canvas id="ordersByCategoryChart" height="40"></canvas>
+        <button class="btn btn-sm btn-outline-primary mt-2" id="exportCategoryChart">Экспортировать</button>
+    </div>
 
-<div class="mt-5">
-    <h3>Заказы по категориям товаров</h3>
-    <canvas id="ordersByCategoryChart" height="40"></canvas>
-    <button class="btn btn-sm btn-outline-primary mt-2" id="exportCategoryChart">Экспортировать</button>
-</div>
+    <div class="mt-5">
+        <h3>Заказы по брендам</h3>
+        <canvas id="ordersByBrandChart" height="40"></canvas>
+        <button class="btn btn-sm btn-outline-primary mt-2" id="exportBrandChart">Экспортировать</button>
+    </div>
 
-<div class="mt-5">
-    <h3>Заказы по брендам</h3>
-    <canvas id="ordersByBrandChart" height="40"></canvas>
-    <button class="btn btn-sm btn-outline-primary mt-2" id="exportBrandChart">Экспортировать</button>
-</div>
-
-<div class="mt-5">
-    <h3>Топ-товары</h3>
-    <canvas id="topProductsChart" height="40"></canvas>
-    <button class="btn btn-sm btn-outline-primary mt-2" id="exportTopChart">Экспортировать</button>
+    <div class="mt-5">
+        <h3>Топ-товары</h3>
+        <canvas id="topProductsChart" height="40"></canvas>
+        <button class="btn btn-sm btn-outline-primary mt-2" id="exportTopChart">Экспортировать</button>
+    </div>
 </div>
 
 @section Scripts {
     <script>
+                // Общая цветовая карта для всех диаграмм
+        const dynamicColorMap = {};
+
+        // Функция генерации случайного цвета в hex
+        function getRandomColor() {
+            const letters = '0123456789ABCDEF';
+            let color = '#';
+            for (let i = 0; i < 6; i++) {
+                color += letters[Math.floor(Math.random() * 16)];
+            }
+            return color;
+        }
+
+        function darkenHexColor(hex, factor) {
+            const num = parseInt(hex.slice(1), 16);
+            const r = Math.floor(((num >> 16) & 255) * (1 - factor));
+            const g = Math.floor(((num >> 8) & 255) * (1 - factor));
+            const b = Math.floor((num & 255) * (1 - factor));
+            return `rgb(${r}, ${g}, ${b})`;
+        }
+
+
+        function getColorPairByLabels(labels) {
+            const backgroundColors = [];
+            const borderColors = [];
+
+            labels.forEach(label => {
+                if (!dynamicColorMap[label]) {
+                    const baseColor = getRandomColor();
+                    dynamicColorMap[label] = {
+                        backgroundColor: baseColor,
+                        borderColor: darkenHexColor(baseColor, 0.2)
+                    };
+                }
+                backgroundColors.push(dynamicColorMap[label].backgroundColor);
+                borderColors.push(dynamicColorMap[label].borderColor);
+            });
+
+            return { backgroundColors, borderColors };
+        }
+
+    </script>
+    <script>
+        document.getElementById('dateRangeForm').addEventListener('submit', function (e) {
+            e.preventDefault();
+
+            const startDate = document.getElementById('startDate').value;
+            const endDate = document.getElementById('endDate').value;
+
+            if (!startDate || !endDate) {
+                alert("Пожалуйста, выберите обе даты.");
+                return;
+            }
+
+            fetch(`/Admin/GetDashboardData?startDate=${startDate}&endDate=${endDate}`)
+                .then(response => response.json())
+                .then(data => {
+                    // Обновляем карточки
+                    document.getElementById('activeOrders').textContent = data.activeOrders;
+                    document.getElementById('newOrdersThisMonth').textContent = data.newOrdersThisMonth;
+                    document.getElementById('averageCheck').textContent = data.averageCheck.toFixed(2) + " руб."; // Форматируем для отображения
+                    document.getElementById('totalRevenue').textContent = data.totalRevenue.toFixed(2) + " руб."; // Форматируем для отображения
+                })
+                .catch(error => console.error('Ошибка при получении данных:', error));
+        });
+    </script>
+    <script>
+        let revenueByMonthChart;
+
+        // Функция для обновления графика
+        function updateRevenueByMonthChart(startDate, endDate) {
+            fetch(`/Admin/GetRevenueByMonth?startDate=${startDate}&endDate=${endDate}`)
+                .then(response => response.json())
+                .then(data => {
+                    const ctx = document.getElementById('revenueByMonthChart').getContext('2d');
+                    if (revenueByMonthChart) {
+                        revenueByMonthChart.destroy();  // Удаляем старый график, если он существует
+                    }
+                    // Создаём новый график
+                    revenueByMonthChart = new Chart(ctx, {
+                        type: 'line',
+                        data: {
+                            labels: data.months,  // Месяцы
+                            datasets: [{
+                                label: 'Выручка',
+                                data: data.revenue,  // Данные по выручке
+                                borderColor: 'rgba(75, 192, 192, 1)',
+                                backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                                borderWidth: 2,
+                                fill: true
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            scales: {
+                                y: {
+                                    beginAtZero: true,
+                                    ticks: {
+                                        stepSize: 10000,  // Шаг оси Y (можно настроить под выручку)
+                                        callback: function(value) {
+                                            return value + ' руб.';  // Добавляем рубли к значению
+                                        }
+                                    },
+                                    title: {
+                                        display: true,
+                                        text: 'Выручка (руб.)'
+                                    }
+                                },
+                                x: {
+                                    title: {
+                                        display: true,
+                                        text: 'Месяц'
+                                    }
+                                }
+                            }
+                        }
+                    });
+                })
+                .catch(error => console.error('Ошибка при загрузке данных для графика:', error));
+        }
+
+        // При изменении дат обновляем график
+        document.getElementById('dateRangeForm').addEventListener('submit', function (e) {
+            e.preventDefault();
+
+            const startDate = document.getElementById('startDate').value;
+            const endDate = document.getElementById('endDate').value;
+
+            if (!startDate || !endDate) {
+                alert("Пожалуйста, выберите обе даты.");
+                return;
+            }
+
+            updateRevenueByMonthChart(startDate, endDate);
+        });
+    </script>
+    <script>
+        let categoryRevenueChart, brandRevenueChart;
+
+        // Функция для обновления графика "Доход по категориям"
+        function updateCategoryRevenueChart(startDate, endDate) {
+            fetch(`/Admin/GetRevenueByCategory?startDate=${startDate}&endDate=${endDate}`)
+                .then(response => response.json())
+                .then(data => {
+                    const ctxCat = document.getElementById('categoryRevenueChart').getContext('2d');
+                    if (categoryRevenueChart) {
+                        categoryRevenueChart.destroy();  // Удаляем старую диаграмму, если она существует
+                    }
+
+                    const { backgroundColors, borderColors } = getColorPairByLabels(data.labels);
+
+                    // Создаём новую диаграмму
+                    categoryRevenueChart = new Chart(ctxCat, {
+                        type: 'pie',
+                        data: {
+                            labels: data.labels,  // Категории
+                            datasets: [{
+                                label: 'Доход по категориям',
+                                data: data.data,  // Доходы по категориям
+                                backgroundColor: backgroundColors,
+                                borderColor: borderColors,
+                                borderWidth: 1
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            plugins: {
+                                legend: {
+                                    position: 'top',
+                                },
+                                tooltip: {
+                                    callbacks: {
+                                        label: function (tooltipItem) {
+                                            return tooltipItem.label + ': ' + tooltipItem.raw.toFixed(2) + ' руб.';  // Добавляем валюту
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    });
+                })
+                .catch(error => console.error('Ошибка при загрузке данных для графика (категории):', error));
+        }
+
+        // Функция для обновления графика "Доход по брендам"
+        function updateBrandRevenueChart(startDate, endDate) {
+            fetch(`/Admin/GetRevenueByBrand?startDate=${startDate}&endDate=${endDate}`)
+                .then(response => response.json())
+                .then(data => {
+                    const ctxBrand = document.getElementById('brandRevenueChart').getContext('2d');
+                    if (brandRevenueChart) {
+                        brandRevenueChart.destroy();  // Удаляем старую диаграмму, если она существует
+                    }
+                    const { backgroundColors, borderColors } = getColorPairByLabels(data.labels);
+                    // Создаём новую диаграмму
+                    brandRevenueChart = new Chart(ctxBrand, {
+                        type: 'pie',
+                        data: {
+                            labels: data.labels,  // Бренды
+                            datasets: [{
+                                label: 'Доход по брендам',
+                                data: data.data,  // Доходы по брендам
+                                backgroundColor: backgroundColors,
+                                borderColor: borderColors,
+                                borderWidth: 1
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            plugins: {
+                                legend: {
+                                    position: 'top',
+                                },
+                                tooltip: {
+                                    callbacks: {
+                                        label: function (tooltipItem) {
+                                            return tooltipItem.label + ': ' + tooltipItem.raw.toFixed(2) + ' руб.';  // Добавляем валюту
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    });
+                })
+                .catch(error => console.error('Ошибка при загрузке данных для графика (бренды):', error));
+        }
+
+        // При изменении дат обновляем графики
+        document.getElementById('dateRangeForm').addEventListener('submit', function (e) {
+            e.preventDefault();
+
+            const startDate = document.getElementById('startDate').value;
+            const endDate = document.getElementById('endDate').value;
+
+            if (!startDate || !endDate) {
+                alert("Пожалуйста, выберите обе даты.");
+                return;
+            }
+
+            updateCategoryRevenueChart(startDate, endDate);
+            updateBrandRevenueChart(startDate, endDate);
+        });
+                // Изначальная загрузка графиков с текущими датами
+        updateCategoryRevenueChart('2024-01-01', '2025-05-07');
+        updateBrandRevenueChart('2024-01-01', '2025-05-07');
+    </script>
+    <script>
+        let categoryStockChart, brandStockChart;
+
+        function updateCategoryStockChart(startDate, endDate) {
+            fetch(`/Admin/GetStockByCategory?startDate=${startDate}&endDate=${endDate}`)
+                .then(response => response.json())
+                .then(data => {
+                    const ctxCat = document.getElementById('categoryStockChart').getContext('2d');
+                    if (categoryStockChart) categoryStockChart.destroy();
+
+                    const { backgroundColors, borderColors } = getColorPairByLabels(data.labels);
+                    categoryStockChart = new Chart(ctxCat, {
+                        type: 'pie',
+                        data: {
+                            labels: data.labels,
+                            datasets: [{
+                                label: 'Количество товаров по категориям',
+                                data: data.data,
+                                backgroundColor: backgroundColors,
+                                borderColor: borderColors,
+                                borderWidth: 1
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            plugins: {
+                                legend: {
+                                    position: 'top'
+                                },
+                                tooltip: {
+                                    callbacks: {
+                                        label: function(context) {
+                                            const label = context.label || '';
+                                            const value = context.parsed + " шт.";
+                                            return `${label}: ${value}`;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    });
+                })
+                .catch(error => console.error('Ошибка при загрузке данных (категории):', error));
+        }
+
+        function updateBrandStockChart(startDate, endDate) {
+            fetch(`/Admin/GetStockByBrand?startDate=${startDate}&endDate=${endDate}`)
+                .then(response => response.json())
+                .then(data => {
+                    const ctxBrand = document.getElementById('brandStockChart').getContext('2d');
+                    if (brandStockChart) brandStockChart.destroy();
+
+                    const { backgroundColors, borderColors } = getColorPairByLabels(data.labels);
+                    brandStockChart = new Chart(ctxBrand, {
+                        type: 'pie',
+                        data: {
+                            labels: data.labels,
+                            datasets: [{
+                                label: 'Количество товаров по брендам',
+                                data: data.data,
+                                backgroundColor: backgroundColors,
+                                borderColor: borderColors,
+                                borderWidth: 1
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            plugins: {
+                                legend: {
+                                    position: 'top'
+                                },
+                                tooltip: {
+                                    callbacks: {
+                                        label: function(context) {
+                                            const label = context.label || '';
+                                            const value = context.parsed + " шт.";
+                                            return `${label}: ${value}`;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    });
+                })
+                .catch(error => console.error('Ошибка при загрузке данных (бренды):', error));
+        }
+
+        // При изменении дат обновляем графики
+        document.getElementById('dateRangeForm').addEventListener('submit', function (e) {
+            e.preventDefault();
+
+            const startDate = document.getElementById('startDate').value;
+            const endDate = document.getElementById('endDate').value;
+
+            if (!startDate || !endDate) {
+                alert("Пожалуйста, выберите обе даты.");
+                return;
+            }
+
+            updateCategoryStockChart(startDate, endDate);
+            updateBrandStockChart(startDate, endDate);
+        });
+
+        // Изначальная загрузка графиков с текущими датами
+        updateCategoryStockChart('2025-01-01', '2025-05-07');
+        updateBrandStockChart('2025-01-01', '2025-05-07');
+    </script>
+    <script>
+        let weeklyOrdersChart;
+
+        // Функция обновления графика
+        function updateWeeklyOrdersChart(endDate) {
+            fetch(`/Admin/GetWeeklyOrders?endDate=${endDate}`)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Ошибка запроса на сервер');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    console.log("Weekly orders data:", data);
+
+                    const ctx = document.getElementById('weeklyOrdersChart').getContext('2d');
+
+                    if (weeklyOrdersChart) {
+                        weeklyOrdersChart.data.labels = data.labels;
+                        weeklyOrdersChart.data.datasets[0].data = data.values;
+                        weeklyOrdersChart.update();
+                    } else {
+                        weeklyOrdersChart = new Chart(ctx, {
+                            type: 'bar',
+                            data: {
+                                labels: data.labels,
+                                datasets: [{
+                                    label: 'Количество заказов',
+                                    data: data.values,
+                                    backgroundColor: 'rgba(13, 110, 253, 0.7)',
+                                    borderColor: 'rgba(13, 110, 253, 1)',
+                                    borderWidth: 1
+                                }]
+                            },
+                            options: {
+                                responsive: true,
+                                maintainAspectRatio: false,
+                                scales: {
+                                    x: {
+                                        title: {
+                                            display: true,
+                                            text: 'Дата'
+                                        }
+                                    },
+                                    y: {
+                                        beginAtZero: true,
+                                        title: {
+                                            display: true,
+                                            text: 'Количество заказов'
+                                        },
+                                        ticks: {
+                                            stepSize: 1
+                                        }
+                                    }
+                                }
+                            }
+                        });
+                    }
+                });
+        }
+
+        // Обработчик формы выбора дат
+        document.getElementById('dateRangeForm').addEventListener('submit', function (e) {
+            e.preventDefault();
+
+            const endDate = document.getElementById('endDate').value;
+            if (!endDate) {
+                alert("Пожалуйста, выберите дату.");
+                return;
+            }
+
+            updateWeeklyOrdersChart(endDate); // Обновление графика
+        });
+
+        // Изначальная загрузка графика на основе текущей даты
+        const today = new Date().toISOString().slice(0, 10);
+        document.getElementById('endDate').value = today;
+        updateWeeklyOrdersChart(today);
+    </script>
+    <script>
+                document.getElementById('exportButton').addEventListener('click', function() {
+            // Получаем значения из полей формы
+            var startDate = document.getElementById('startDate').value;
+            var endDate = document.getElementById('endDate').value;
+
+            if (!startDate || !endDate) {
+                alert('Пожалуйста, выберите оба значения даты.');
+                return;
+            }
+
+            // Создаем ссылку для отправки запроса
+            var url = `/Admin/ExportDashboardToExcel?startDate=${startDate}&endDate=${endDate}`;
+
+            // Отправляем запрос на сервер
+            window.location.href = url;
+        });
+
+    </script>
+    @* <script>
         var ordersChart;
 
         function updateChartData(startMonth, startYear, endMonth, endYear) {
@@ -219,7 +743,7 @@
             link.download = 'Статистика_по_заказам.png';
             link.click();
         });
-    </script>
+    </script> *@
     <script>
         let categoryChart, brandChart, topChart;
 
@@ -240,6 +764,7 @@
                         }]
                     },
                     options: {
+                        responsive: true,
                         indexAxis: 'y',
                         scales: {
                             x: {
@@ -270,6 +795,7 @@
                         }]
                     },
                     options: {
+                        responsive: true,
                         indexAxis: 'y',
                         scales: {
                             x: {
@@ -300,6 +826,7 @@
                         }]
                     },
                     options: {
+                        responsive: true,
                         indexAxis: 'y',
                         scales: {
                             x: {
@@ -335,5 +862,4 @@
             link.click();
         });
     </script>
-
 }

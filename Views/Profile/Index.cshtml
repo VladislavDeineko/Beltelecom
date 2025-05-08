@@ -9,15 +9,60 @@
 <div class="profile-container">
     <div class="profile-main">
         <div class="profile_card">
-            <img src="/images/profile-user.png" alt="Profile Image" />
+            <img src="/images/profile-user_new.png" alt="Profile Image" />
             <p><strong>Электронная почта:</strong> @Model.Email</p>
             <p><strong>Номер телефона:</strong> @Model.PhoneNum</p>
         </div>
         <a class="btn btn-red mt-3" asp-area="Identity" asp-page="/Account/Manage/Index">Изменить данные</a>
         <a class="btn btn-danger mt-3" asp-action="Logout">Выйти</a>
-    </div> 
+    </div>
 
-
+    <div class="profile_form">
+        <h3>Личные данные данные</h3>
+        <form asp-action="UpdateDealInfo" method="post">
+            <div class="form-floating mb-3">
+                <input type="text" name="LastName" value="@Model.UserDealInfo?.LastName" class="form-control" id="LastName" />
+                <label for="LastName">Фамилия</label>
+            </div>
+            <div class="form-floating mb-3">
+                <input type="text" name="FirstName" value="@Model.UserDealInfo?.FirstName" class="form-control" id="FirstName" />
+                <label for="FirstName">Имя</label>
+            </div>
+            <div class="form-floating mb-3">
+                <input type="text" name="MiddleName" value="@Model.UserDealInfo?.MiddleName" class="form-control" id="MiddleName" />
+                <label for="MiddleName">Отчество</label>
+            </div>
+            @*             <div class="form-floating mb-3">
+                <input type="text" name="PassportNumber" value="@Model.UserDealInfo?.PassportNumber" class="form-control" id="PassportNumber" />
+                <label for="PassportNumber">Серия и номер паспорта</label>
+            </div>
+            <div class="form-floating mb-3">
+                <input type="date" name="PassportIssuedDate" value="@Model.UserDealInfo?.PassportIssuedDate?.ToString("yyyy-MM-dd")" class="form-control" id="PassportIssuedDate" />
+                <label for="PassportIssuedDate">Дата выдачи</label>
+            </div>
+            <div class="form-floating mb-3">
+                <input type="text" name="PassportIssuedBy" value="@Model.UserDealInfo?.PassportIssuedBy" class="form-control" id="PassportIssuedBy" />
+                <label for="PassportIssuedBy">Кем выдан</label>
+            </div>
+            <div class="form-floating mb-3">
+                <input type="text" name="PersonalNumber" value="@Model.UserDealInfo?.PersonalNumber" class="form-control" id="PersonalNumber" />
+                <label for="PersonalNumber">Личный номер</label>
+            </div>
+            <div class="form-floating mb-3">
+                <input type="date" name="PassportExpiryDate" value="@Model.UserDealInfo?.PassportExpiryDate?.ToString("yyyy-MM-dd")" class="form-control" id="PassportExpiryDate" />
+                <label for="PassportExpiryDate">Дата окончания действия</label>
+            </div> *@
+            <button type="submit" class="btn btn-primary">Сохранить</button>
+            @if (TempData["SuccessMessageDeal"] != null)
+            {
+                <div class="alert alert-success">@TempData["SuccessMessageDeal"]</div>
+            }
+            @if (TempData["ErrorMessageDeal"] != null)
+            {
+                <div class="alert alert-danger">@TempData["ErrorMessageDeal"]</div>
+            }
+        </form>
+    </div>
     <div class="profile_form">
         <h3>Адрес</h3>
         <form asp-action="UpdateAddress" method="post">
@@ -52,52 +97,4 @@
             }
         </form>
     </div>
-
-    <div class="profile_form">
-        <h3>Паспортные данные</h3>
-        <form asp-action="UpdateDealInfo" method="post">
-            <div class="form-floating mb-3">
-                <input type="text" name="LastName" value="@Model.UserDealInfo?.LastName" class="form-control" id="LastName" />
-                <label for="LastName">Фамилия</label>
-            </div>
-            <div class="form-floating mb-3">
-                <input type="text" name="FirstName" value="@Model.UserDealInfo?.FirstName" class="form-control" id="FirstName" />
-                <label for="FirstName">Имя</label>
-            </div>
-            <div class="form-floating mb-3">
-                <input type="text" name="MiddleName" value="@Model.UserDealInfo?.MiddleName" class="form-control" id="MiddleName" />
-                <label for="MiddleName">Отчество</label>
-            </div>
-            <div class="form-floating mb-3">
-                <input type="text" name="PassportNumber" value="@Model.UserDealInfo?.PassportNumber" class="form-control" id="PassportNumber" />
-                <label for="PassportNumber">Серия и номер паспорта</label>
-            </div>
-            <div class="form-floating mb-3">
-                <input type="date" name="PassportIssuedDate" value="@Model.UserDealInfo?.PassportIssuedDate?.ToString("yyyy-MM-dd")" class="form-control" id="PassportIssuedDate" />
-                <label for="PassportIssuedDate">Дата выдачи</label>
-            </div>
-            <div class="form-floating mb-3">
-                <input type="text" name="PassportIssuedBy" value="@Model.UserDealInfo?.PassportIssuedBy" class="form-control" id="PassportIssuedBy" />
-                <label for="PassportIssuedBy">Кем выдан</label>
-            </div>
-            <div class="form-floating mb-3">
-                <input type="text" name="PersonalNumber" value="@Model.UserDealInfo?.PersonalNumber" class="form-control" id="PersonalNumber" />
-                <label for="PersonalNumber">Личный номер</label>
-            </div>
-            <div class="form-floating mb-3">
-                <input type="date" name="PassportExpiryDate" value="@Model.UserDealInfo?.PassportExpiryDate?.ToString("yyyy-MM-dd")" class="form-control" id="PassportExpiryDate" />
-                <label for="PassportExpiryDate">Дата окончания действия</label>
-            </div>
-            <button type="submit" class="btn btn-primary">Сохранить</button>
-            @if (TempData["SuccessMessageDeal"] != null)
-            {
-                <div class="alert alert-success">@TempData["SuccessMessageDeal"]</div>
-            }
-            @if (TempData["ErrorMessageDeal"] != null)
-            {
-                <div class="alert alert-danger">@TempData["ErrorMessageDeal"]</div>
-            }
-        </form>
-    </div>
-
 </div>

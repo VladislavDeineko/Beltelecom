@@ -10,12 +10,6 @@ html {
     font-size: 14px;
 }
 
-@media (min-width: 768px) {
-    html {
-        font-size: 16px;
-    }
-}
-
 .btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
     box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
 }
@@ -69,8 +63,14 @@ footer {
         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
     }
 
-    .card img {
-    }
+.btn-details {
+    background-color: var(--primary-red) !important;
+    border-color: var(--button-hover) !important;
+}
+
+.btn-details:hover {
+    background-color: var(--button-hover) !important;
+}
 
 .card-img-top {
     padding: 10px;
@@ -142,7 +142,7 @@ footer {
     display: flex;
     justify-content: space-between;
     align-items: flex-start;
-    background-color: #007bff; /* Синий фон */
+    background-color: #fae3e3;
     padding: 20px;
     border-radius: 10px;
     color: white;
@@ -152,7 +152,7 @@ footer {
     flex: 1;
     max-width: 250px;
     text-align: center;
-    background: white;
+    background: #f9d2cf;
     padding: 15px;
     border-radius: 10px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
@@ -169,7 +169,7 @@ footer {
 .profile_form {
     flex: 2;
     max-width: 450px;
-    background: white;
+    background-color: #f9d2cf;
     padding: 15px;
     border-radius: 10px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
@@ -813,6 +813,18 @@ select {
 }
 
 .chart-filter {
+}
+
+.revenueByMonthChart-container {
+    position: relative;
+    max-width: 1000px; /* или нужная ширина */
+    max-height: 300px; /* фиксированная высота */
+    margin: 0 auto; /* по центру */
+}
+
+#revenueByMonthChart {
+    margin: 0 auto; /* по центру */
+    height: 300px;
 }
 
 /*popular*/
