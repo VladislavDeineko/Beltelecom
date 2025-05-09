@@ -1,5 +1,6 @@
 :root {
     --primary-red: #d9534f;
+    --primary-red-disabled: #f5c6cb;
     --primary-dark: #333;
     --primary-gray: #777;
     --button-hover: #b03a2e;
@@ -464,6 +465,15 @@ footer {
     .add-to-cart:hover {
         background: var(--button-hover);
     }
+
+.add-to-cart_disabled {
+    background: var(--primary-red-disabled);
+    color: white;
+    font-size: 18px;
+    padding: 12px 20px;
+    border: none;
+    border-radius: 5px;
+}
 
 .favorite-button {
     background-color: #ff9800;

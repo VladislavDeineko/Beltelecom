@@ -49,7 +49,6 @@ namespace Beltelecom.Models
 
         [Display(Name = "Дата добавления")]
         public DateTime CreatedAt { get; set; }
-
         public List<ProductSpecification>? Specifications { get; set; }
     }
 }

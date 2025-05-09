@@ -72,6 +72,8 @@ namespace Beltelecom.Controllers
                 RequiresSetup = request.RequiresSetup
             };
 
+            product.Stock -= 1;
+
             _context.Orders.Add(order);
             await _context.SaveChangesAsync();
 

@@ -18,7 +18,14 @@
             <p class="product-price">Цена: @Model.Price руб.</p>
             <p class="product-warranty">Гарантия: @Model.WarrantyMonths мес.</p>
 
-            <button class="add-to-cart">Оформить заказ</button>
+            @if (Model.Stock > 0)
+            {
+                <button class="add-to-cart">Оформить заказ</button>
+            }
+            else
+            {
+                <button class="add-to-cart_disabled" disabled>Нет в наличии</button>
+            }
             @Html.AntiForgeryToken()
             <button id="favorite-button"
                     class="favorite-button @(ViewBag.IsFavorite ? "favorite-active" : "")"
@@ -132,6 +139,7 @@
                 if (response.ok) {
                     alert("Заявка успешно оформлена!");
                     modal.style.display = "none";
+                    location.reload(); // <-- Обновление страницы
                 } else {
                     const errorText = await response.text();
                     if (errorText.includes("номер телефона")) {

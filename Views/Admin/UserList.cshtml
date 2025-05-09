@@ -1,25 +1,37 @@
 ﻿@using Beltelecom.Models.ViewModels
 @model List<UserListViewModel>
+@removeTagHelper Microsoft.AspNetCore.Mvc.TagHelpers.OptionTagHelper, Microsoft.AspNetCore.Mvc.TagHelpers
 
 @{
     ViewData["Title"] = "Пользователи";
+    var selectedRole = ViewData["Role"]?.ToString();
+    var searchQuery = ViewData["Search"]?.ToString();
 }
 
 <h2>Пользователи</h2>
 
 <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
-    <a href="@Url.Action("ExportUsersToExcel", "Admin", new { search = Context.Request.Query["search"] })"
+    <a href="@Url.Action("ExportUsersToExcel", "Admin", new { search = searchQuery, role = selectedRole })"
        class="btn btn-success">
         Экспорт в Excel
     </a>
 
-    <form method="get" class="d-flex flex-grow-1" role="search" style="max-width: 500px;">
-        <input type="text" name="search" class="form-control me-2"
-               placeholder="Поиск по ФИО..." value="@Context.Request.Query["search"]" />
-        <button type="submit" class="btn btn-outline-primary">Поиск</button>
+    <form method="get" class="row g-3 mb-4">
+        <div class="col-md-4">
+            <input type="text" name="search" value="@searchQuery" class="form-control" placeholder="Поиск по ФИО" id="searchInput" />
+        </div>
+        <div class="col-md-3">
+            <select name="role" class="form-select">
+                <option value="">Все роли</option>
+                <option value="User" @(selectedRole == "User" ? "selected" : "")>Пользователь</option>
+                <option value="Admin" @(selectedRole == "Admin" ? "selected" : "")>Админ</option>
+            </select>
+        </div>
+        <div class="col-md-2">
+            <button type="submit" class="btn btn-primary">Фильтровать</button>
+        </div>
     </form>
 </div>
-
 
 <table class="table table-bordered table-striped" id="usersTable">
     <thead class="thead-dark">
@@ -29,6 +41,7 @@
             <th>Телефон</th>
             <th>Адрес</th>
             <th>Кол-во заказов</th>
+            <th>Роль</th>
         </tr>
     </thead>
     <tbody>
@@ -40,22 +53,60 @@
                 <td>@user.PhoneNumber</td>
                 <td>@user.Address</td>
                 <td>@user.OrdersCount</td>
+                <td>
+                    @Html.AntiForgeryToken()
+                    <select class="form-select role-select" data-user-id="@user.UserId">
+                        <option value="User" @(user.Role == "User" ? "selected" : "")>Пользователь</option>
+                        <option value="Admin" @(user.Role == "Admin" ? "selected" : "")>Админ</option>
+                    </select>
+                </td>
             </tr>
         }
     </tbody>
 </table>
 
-<script>
-    const input = document.getElementById("searchInput");
-    const table = document.getElementById("usersTable");
+<div aria-live="polite" aria-atomic="true" style="position: relative;">
+    <div id="roleChangedToast"
+         class="toast position-fixed bottom-0 end-0 p-3 bg-primary text-white"
+         role="alert" aria-live="assertive" aria-atomic="true"
+         data-bs-delay="3000" data-bs-autohide="true">
+        <div class="toast-body" id="roleChangedToastBody">
+            Роль успешно изменена!
+        </div>
+    </div>
+</div>
 
-    input.addEventListener("input", function () {
-        const filter = input.value.toLowerCase();
-        const rows = table.querySelectorAll("tbody tr");
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // Обработчик изменения роли
+            document.querySelectorAll('.role-select').forEach(select => {
+                select.addEventListener('change', async (e) => {
+                    const userId = e.target.dataset.userId;
+                    const role = e.target.value;
 
-        rows.forEach(row => {
-            const text = row.textContent.toLowerCase();
-            row.style.display = text.includes(filter) ? "" : "none";
+                    if (!userId) {
+                        console.error("userId пустой");
+                        return;
+                    }
+
+                    const response = await fetch('/Admin/ChangeUserRole', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]').value
+                        },
+                        body: JSON.stringify({ userId, role })
+                    });
+
+                    if (response.ok) {
+                        const toastEl = new bootstrap.Toast(document.getElementById('roleChangedToast'));
+                        toastEl.show();
+                    } else {
+                        console.log("Ошибка изменения роли");
+                    }
+                });
+            });
         });
-    });
-</script>
+    </script>
+}

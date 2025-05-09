@@ -10,6 +10,8 @@ using static NuGet.Packaging.PackagingConstants;
 using ClosedXML.Excel;
 using DocumentFormat.OpenXml.Drawing.Charts;
 using System.Diagnostics;
+using Azure.Core;
+using Microsoft.AspNetCore.Identity;
 
 namespace Beltelecom.Controllers
 {
@@ -17,10 +19,12 @@ namespace Beltelecom.Controllers
     public class AdminController : Controller
     {
         private readonly ApplicationDbContext _context;
+        private readonly UserManager<IdentityUser> _userManager;
 
-        public AdminController(ApplicationDbContext context)
+        public AdminController(ApplicationDbContext context, UserManager<IdentityUser> userManager)
         {
             _context = context;
+            _userManager = userManager;
         }
 
         public IActionResult Index()
@@ -331,12 +335,15 @@ namespace Beltelecom.Controllers
         {
             var order = await _context.Orders
                 .FirstOrDefaultAsync(o => o.Id == id);
+            var product = await _context.Products.FindAsync(order.ProductId);
+
 
             if (order == null)
             {
                 return NotFound();
             }
 
+            product.Stock += 1;
             // Удаляем заказ
             _context.Orders.Remove(order);
             await _context.SaveChangesAsync();
@@ -1479,52 +1486,114 @@ namespace Beltelecom.Controllers
             return RedirectToAction(nameof(ManageCategoriesAndBrands));
         }
 
-        public async Task<IActionResult> UserList(string? search)
+        public async Task<IActionResult> UserList(string? search, string? role)
         {
-            var usersQuery = _context.Users.Select(u => new
-            {
-                u.Id,
-                u.Email,
-                DealInfo = _context.UserDealInfos.FirstOrDefault(info => info.UserId == u.Id),
-                Address = _context.UserAddresses.FirstOrDefault(addr => addr.UserId == u.Id),
-                OrdersCount = _context.Orders.Count(o => o.UserId == u.Id)
-            });
+            var users = await _context.Users.ToListAsync();
 
-            if (!string.IsNullOrWhiteSpace(search))
+            var userIds = users.Select(u => u.Id).ToList();
+
+            var dealInfos = await _context.UserDealInfos
+                .Where(info => userIds.Contains(info.UserId))
+                .ToListAsync();
+
+            var addresses = await _context.UserAddresses
+                .Where(addr => userIds.Contains(addr.UserId))
+                .ToListAsync();
+
+            var roles = await _context.UserRoles
+                .Where(ur => userIds.Contains(ur.UserId))
+                .Join(_context.Roles, ur => ur.RoleId, r => r.Id,
+                    (ur, r) => new { ur.UserId, r.Name })
+                .ToListAsync();
+
+            var ordersCount = await _context.Orders
+                .Where(o => userIds.Contains(o.UserId))
+                .GroupBy(o => o.UserId)
+                .Select(g => new { UserId = g.Key, Count = g.Count() })
+                .ToListAsync();
+
+            var model = users.Select(u =>
             {
-                usersQuery = usersQuery.Where(u =>
-                    (u.DealInfo!.LastName + " " + u.DealInfo.FirstName + " " + u.DealInfo.MiddleName)
-                    .ToLower().Contains(search.ToLower()));
+                var dealInfo = dealInfos.FirstOrDefault(d => d.UserId == u.Id);
+                var address = addresses.FirstOrDefault(a => a.UserId == u.Id);
+                var roleName = roles.FirstOrDefault(r => r.UserId == u.Id)?.Name ?? "Нет";
+                var count = ordersCount.FirstOrDefault(c => c.UserId == u.Id)?.Count ?? 0;
+
+                return new UserListViewModel
+                {
+                    UserId = u.Id,
+                    FullName = dealInfo != null
+                        ? $"{dealInfo.LastName} {dealInfo.FirstName} {dealInfo.MiddleName}".Trim()
+                        : "Не указано",
+                    Email = u.Email,
+                    PhoneNumber = dealInfo?.PhoneNumber,
+                    Address = address != null
+                        ? $"{address.Region}, {address.City}, {address.Street}, д.{address.House}" +
+                          (string.IsNullOrWhiteSpace(address.Apartment) ? "" : $", кв.{address.Apartment}")
+                        : "Не указано",
+                    OrdersCount = count,
+                    Role = roleName
+                };
+            }).ToList();
+
+            // Фильтрация по роли, если указана
+            if (!string.IsNullOrWhiteSpace(role))
+            {
+                model = model.Where(u => u.Role.Contains(role, StringComparison.OrdinalIgnoreCase)).ToList();
             }
 
-            var users = await usersQuery.ToListAsync();
-
-            var model = users.Select(u => new UserListViewModel
+            // Фильтрация по поисковому запросу
+            if (!string.IsNullOrWhiteSpace(search))
             {
-                FullName = $"{u.DealInfo?.LastName} {u.DealInfo?.FirstName} {u.DealInfo?.MiddleName}".Trim(),
-                Email = u.Email,
-                PhoneNumber = u.DealInfo?.PhoneNumber,
-                Address = u.Address != null
-                    ? $"{u.Address.Region}, {u.Address.City}, {u.Address.Street}, д.{u.Address.House}" +
-                      (string.IsNullOrWhiteSpace(u.Address.Apartment) ? "" : $", кв.{u.Address.Apartment}")
-                    : "Не указано",
-                OrdersCount = u.OrdersCount
-            }).ToList();
+                model = model.Where(u => u.FullName.ToLower().Contains(search.ToLower())).ToList();
+            }
+
+            // Передаем параметры фильтра в представление для сохранения состояния
+            ViewData["Search"] = search;
+            ViewData["Role"] = role;
 
             return View(model);
         }
 
-        public async Task<IActionResult> ExportUsersToExcel(string? search)
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ChangeUserRole([FromBody] ChangeUserRoleDto dto)
         {
-            var usersQuery = _context.Users.Select(u => new
-            {
-                u.Id,
-                u.Email,
-                DealInfo = _context.UserDealInfos.FirstOrDefault(info => info.UserId == u.Id),
-                Address = _context.UserAddresses.FirstOrDefault(addr => addr.UserId == u.Id),
-                OrdersCount = _context.Orders.Count(o => o.UserId == u.Id)
-            });
+            var user = await _userManager.FindByIdAsync(dto.UserId);
+            if (user == null) return NotFound();
 
+            var currentRoles = await _userManager.GetRolesAsync(user);
+            var resultRemove = await _userManager.RemoveFromRolesAsync(user, currentRoles);
+            if (!resultRemove.Succeeded) return BadRequest();
+
+            var resultAdd = await _userManager.AddToRoleAsync(user, dto.Role);
+            if (!resultAdd.Succeeded) return BadRequest();
+
+            return Ok();
+        }
+        public async Task<IActionResult> ExportUsersToExcel(string? search, string? role)
+        {
+            var usersQuery = _context.Users
+                .Select(u => new
+                {
+                    u.Id,
+                    u.Email,
+                    DealInfo = _context.UserDealInfos.FirstOrDefault(info => info.UserId == u.Id),
+                    Address = _context.UserAddresses.FirstOrDefault(addr => addr.UserId == u.Id),
+                    OrdersCount = _context.Orders.Count(o => o.UserId == u.Id),
+                    Role = _context.UserRoles
+                                .Where(ur => ur.UserId == u.Id)
+                                .Join(_context.Roles, ur => ur.RoleId, r => r.Id, (ur, r) => r.Name)
+                                .FirstOrDefault()
+                });
+
+            // Фильтрация по роли, если указана
+            if (!string.IsNullOrWhiteSpace(role))
+            {
+                usersQuery = usersQuery.Where(u => u.Role == role);
+            }
+
+            // Фильтрация по поисковому запросу
             if (!string.IsNullOrWhiteSpace(search))
             {
                 usersQuery = usersQuery.Where(u =>
@@ -1542,6 +1611,7 @@ namespace Beltelecom.Controllers
             worksheet.Cell(1, 3).Value = "Телефон";
             worksheet.Cell(1, 4).Value = "Адрес";
             worksheet.Cell(1, 5).Value = "Кол-во заказов";
+            worksheet.Cell(1, 6).Value = "Роль";
 
             int row = 2;
             foreach (var u in users)
@@ -1557,6 +1627,13 @@ namespace Beltelecom.Controllers
                 worksheet.Cell(row, 3).Value = u.DealInfo?.PhoneNumber;
                 worksheet.Cell(row, 4).Value = address;
                 worksheet.Cell(row, 5).Value = u.OrdersCount;
+                worksheet.Cell(row, 6).Value = u.Role switch
+                {
+                    "Admin" => "Админ",
+                    "User" => "Пользователь",
+                    _ => "Нет"
+                };
+
                 row++;
             }
 
@@ -1569,6 +1646,5 @@ namespace Beltelecom.Controllers
                         "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
                         fileName);
         }
-
     }
 }
