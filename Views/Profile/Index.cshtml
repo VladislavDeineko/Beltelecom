@@ -21,15 +21,15 @@
         <h3>Личные данные данные</h3>
         <form asp-action="UpdateDealInfo" method="post">
             <div class="form-floating mb-3">
-                <input type="text" name="LastName" value="@Model.UserDealInfo?.LastName" class="form-control" id="LastName" />
+                <input type="text" name="LastName" value="@Model.UserDealInfo?.LastName" class="form-control profile_form_input" id="LastName" />
                 <label for="LastName">Фамилия</label>
             </div>
             <div class="form-floating mb-3">
-                <input type="text" name="FirstName" value="@Model.UserDealInfo?.FirstName" class="form-control" id="FirstName" />
+                <input type="text" name="FirstName" value="@Model.UserDealInfo?.FirstName" class="form-control profile_form_input" id="FirstName" />
                 <label for="FirstName">Имя</label>
             </div>
             <div class="form-floating mb-3">
-                <input type="text" name="MiddleName" value="@Model.UserDealInfo?.MiddleName" class="form-control" id="MiddleName" />
+                <input type="text" name="MiddleName" value="@Model.UserDealInfo?.MiddleName" class="form-control profile_form_input" id="MiddleName" />
                 <label for="MiddleName">Отчество</label>
             </div>
             @*             <div class="form-floating mb-3">
@@ -67,23 +67,23 @@
         <h3>Адрес</h3>
         <form asp-action="UpdateAddress" method="post">
             <div class="form-floating mb-3">
-                <input type="text" name="Region" value="@Model.UserAddress?.Region" class="form-control" id="Region" />
+                <input type="text" name="Region" value="@Model.UserAddress?.Region" class="form-control profile_form_input" id="Region" />
                 <label for="Region">Область</label>
             </div>
             <div class="form-floating mb-3">
-                <input type="text" name="City" value="@Model.UserAddress?.City" class="form-control" id="City" />
+                <input type="text" name="City" value="@Model.UserAddress?.City" class="form-control profile_form_input" id="City" />
                 <label for="City">Населённый пункт</label>
             </div>
             <div class="form-floating mb-3">
-                <input type="text" name="Street" value="@Model.UserAddress?.Street" class="form-control" id="Street" />
+                <input type="text" name="Street" value="@Model.UserAddress?.Street" class="form-control profile_form_input" id="Street" />
                 <label for="Street">Улица</label>
             </div>
             <div class="form-floating mb-3">
-                <input type="text" name="House" value="@Model.UserAddress?.House" class="form-control" id="House" />
+                <input type="text" name="House" value="@Model.UserAddress?.House" class="form-control profile_form_input" id="House" />
                 <label for="House">Дом</label>
             </div>
             <div class="form-floating mb-3">
-                <input type="text" name="Apartment" value="@Model.UserAddress?.Apartment" class="form-control" id="Apartment" />
+                <input type="text" name="Apartment" value="@Model.UserAddress?.Apartment" class="form-control profile_form_input" id="Apartment" />
                 <label for="Apartment">Квартира</label>
             </div>
             <button type="submit" class="btn btn-primary">Сохранить</button>

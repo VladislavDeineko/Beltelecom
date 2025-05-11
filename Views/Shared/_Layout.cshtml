@@ -22,6 +22,9 @@
                 <div class="collapse navbar-collapse" id="navbarNav">
                     <ul class="navbar-nav w-100">
                         <li class="nav-item"><a class="nav-link" asp-area="" asp-controller="Catalog" asp-action="Index">Каталог</a></li>
+                        <li class="nav-item">
+                            <a class="nav-link" asp-controller="Home" asp-action="About">О нас</a>
+                        </li>
                         @if (User.IsInRole("Admin"))
                         {
                             <li class="nav-item"><a class="nav-link" asp-controller="Admin" asp-action="Index">Админ-панель</a></li>
@@ -49,8 +52,33 @@
         </main>
     </div>
 
-    <footer class="bg-dark text-light text-center py-3">
-        <p>&copy; 2025 Белтелеком Сервис. Все права защищены.</p>
+    <footer class="site-footer">
+        <div class="footer-container">
+            <div class="footer-section footer-section--info">
+                <a href="https://www.beltelecom.by" target="_blank" class="footer-brand">
+                    РУП «Белтелком». УНП 101007741
+                </a>
+                <p class="footer-copyright">&copy; 2025 Белтелеком Сервис. Все права защищены.</p>
+            </div>
+
+            <div class="footer-section footer-section--contacts">
+                <div class="footer-contact">
+                    <i class="bi bi-telephone footer-contact__icon"></i>
+                    <span class="footer-contact__text">123 — служба поддержки</span>
+                </div>
+            </div>
+
+            <div class="footer-section footer-section--documents">
+                <a href="https://www.beltelecom.by/sites/default/files/content/poryadokokazaniirasrochkifizlicam2021.pdf"
+                   target="_blank" class="footer-document">
+                    <i class="bi bi-file-earmark-text"></i> Порядок рассрочки
+                </a>
+                <a href="/assets/files/tipovoi-dogovor-rassrochka.doc"
+                   target="_blank" class="footer-document">
+                    <i class="bi bi-file-earmark-word"></i> Типовой договор
+                </a>
+            </div>
+        </div>
     </footer>
 
     <script src="~/lib/jquery/dist/jquery.min.js"></script>

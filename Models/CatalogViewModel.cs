@@ -8,5 +8,8 @@
         public string SelectedCategory { get; set; }
         public string SelectedBrand { get; set; }
         public string SortOrder { get; set; }
+
+        public int CurrentPage { get; set; }
+        public int TotalPages { get; set; }
     }
 }

@@ -249,6 +249,28 @@ namespace Beltelecom.Controllers
             return RedirectToAction(nameof(ProductList));
         }
 
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> AddStock([FromBody] StockUpdateModel model)
+        {
+            if (model == null || model.ProductId <= 0 || model.Amount <= 0)
+            {
+                return BadRequest("Неверные данные");
+            }
+
+            var product = await _context.Products.FindAsync(model.ProductId);
+            if (product == null)
+            {
+                return NotFound();
+            }
+
+            product.Stock += model.Amount;
+            await _context.SaveChangesAsync();
+
+            return Json(new { newStock = product.Stock });
+        }
+
+
         // Обработка удаления товара
         [HttpPost]
         [ValidateAntiForgeryToken]

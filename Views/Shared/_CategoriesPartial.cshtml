@@ -1,7 +1,7 @@
 ﻿@model IEnumerable<Beltelecom.Models.Category>
 
 <section id="catalog" class="my-5">
-    <h2>Каталог товаров</h2>
+    <h2><a href="/Catalog" class="text-decoration-none text-dark to-catalog">Каталог товаров</a></h2>
     <div class="row row-cols-1 row-cols-md-3 g-4">
         @foreach (var category in Model)
         {

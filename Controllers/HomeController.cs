@@ -69,4 +69,8 @@ public class HomeController : Controller
         return PartialView("_ProductsPartial", products);
     }
 
+    public IActionResult About()
+    {
+        return View();
+    }
 }

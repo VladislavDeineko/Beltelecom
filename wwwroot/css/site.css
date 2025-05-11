@@ -212,6 +212,19 @@ footer {
     margin-top: 7px !important;
 }
 
+.profile_form_input {
+    background-color: rgba(250, 227, 227, 0.9) !important;
+}
+
+.to-catalog {
+    transition: color 0.2s ease;
+    cursor: pointer;
+}
+
+h2 .to-catalog:hover {
+    color: rgba(0, 0, 0, 0.6) !important; /* или другой светло-серый цвет */
+}
+
 /* Общая стилизация контейнера каталога */
 .catalog-container {
     display: flex;
@@ -378,6 +391,30 @@ footer {
 .installment {
     font-size: 14px;
     color: #28a745;
+}
+
+/*Стили для пагинации*/
+.pagination .page-link {
+    color: var(--primary-red);
+    border-color: var(--primary-red);
+}
+
+.pagination .page-item.active .page-link {
+    background-color: var(--primary-red);
+    border-color: var(--primary-red);
+    color: white;
+}
+
+.pagination .page-link:hover {
+    background-color: var(--primary-red);
+    color: white;
+}
+
+.pagination .page-item.disabled .page-link {
+    color: #ccc;
+    pointer-events: none;
+    background-color: transparent;
+    border-color: #ddd;
 }
 
 /*ProductDetails*/
@@ -870,4 +907,364 @@ select {
 
 #savePopularProductsBtn {
     margin-top: 20px;
+}
+
+/*About*/
+/* Основные стили страницы */
+.about-page {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    color: #333;
+    line-height: 1.6;
+}
+
+.about-page__title {
+    font-size: 2.5rem;
+    color: #2c3e50;
+    margin-bottom: 1.5rem;
+    font-weight: 600;
+}
+
+.about-page__description {
+    font-size: 1.1rem;
+    margin-bottom: 2rem;
+    color: #555;
+}
+
+.about-page__image-block {
+    margin: 3rem 0;
+    text-align: center;
+}
+
+.about-page__image {
+    max-width: 100%;
+    height: auto;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.about-page__image-caption {
+    margin-top: 0.8rem;
+    font-size: 0.9rem;
+    color: #777;
+    font-style: italic;
+}
+
+.about-page__divider {
+    height: 1px;
+    background-color: #e0e0e0;
+    margin: 3rem 0;
+}
+
+.about-page__subtitle {
+    font-size: 2rem;
+    color: #2c3e50;
+    text-align: center;
+    margin-bottom: 2.5rem;
+    font-weight: 600;
+}
+
+/* Стили для блока преимуществ */
+.advantages-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+    margin: 2rem 0;
+}
+
+.advantage-card {
+    background: #fff;
+    border-radius: 8px;
+    padding: 2rem;
+    text-align: center;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+    .advantage-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+    }
+
+.advantage-card__icon {
+    font-size: 3rem;
+    color: #3498db;
+    margin-bottom: 1.5rem;
+}
+
+.advantage-card__title {
+    font-size: 1.3rem;
+    color: #2c3e50;
+    margin-bottom: 1rem;
+}
+
+.advantage-card__description {
+    color: #666;
+    font-size: 1rem;
+}
+
+/* Стили для блока с картой */
+.location-block {
+    margin: 4rem 0;
+}
+
+.location-block__title {
+    font-size: 2rem;
+    color: #2c3e50;
+    text-align: center;
+    margin-bottom: 2rem;
+    font-weight: 600;
+}
+
+.location-block__map-container {
+    position: relative;
+    padding-bottom: 45%; /* Уменьшили соотношение с 56.25% до 45% */
+    height: 0;
+    overflow: hidden;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    max-width: 800px; /* Добавили максимальную ширину */
+    margin: 0 auto; /* Центрирование */
+}
+
+.location-block__map {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border: none;
+}
+
+.location-block__caption {
+    text-align: center;
+    margin-top: 1rem;
+    color: #777;
+    font-style: italic;
+}
+
+/* Адаптивность для карты */
+@media (max-width: 768px) {
+    .location-block__map-container {
+        padding-bottom: 60%; /* На мобильных делаем чуть выше */
+        max-width: 100%;
+    }
+}
+
+/* Стили для контактной информации */
+.contacts-block {
+    margin: 4rem 0;
+}
+
+.contacts-block__title {
+    font-size: 2rem;
+    color: #2c3e50;
+    text-align: center;
+    margin-bottom: 2.5rem;
+    font-weight: 600;
+}
+
+.contacts-block__info {
+    max-width: 800px;
+    margin: 0 auto 3rem;
+}
+
+.contacts-list {
+    list-style: none;
+    padding: 0;
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+}
+
+.contacts-list__item {
+    padding: 1.2rem 1.5rem;
+    border-bottom: 1px solid #eee;
+    font-size: 1.05rem;
+}
+
+    .contacts-list__item:last-child {
+        border-bottom: none;
+    }
+
+/* Стили для блока с рабочим временем */
+.working-hours {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)));
+    gap: 2rem;
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.working-hours__card {
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.working-hours__header {
+    padding: 1rem 1.5rem;
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: white;
+}
+
+.working-hours__card--individual .working-hours__header {
+    background-color: #3498db;
+}
+
+.working-hours__card--business .working-hours__header {
+    background-color: #7f8c8d;
+}
+
+.working-hours__body {
+    padding: 1.5rem;
+    background: #fff;
+}
+
+.working-hours__time {
+    margin-bottom: 0.8rem;
+    font-size: 1rem;
+    color: #555;
+}
+
+    .working-hours__time:last-child {
+        margin-bottom: 0;
+    }
+
+/* Адаптивность */
+@media (max-width: 768px) {
+    .about-page {
+        padding: 1.5rem;
+    }
+
+    .about-page__title {
+        font-size: 2rem;
+    }
+
+    .advantages-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .working-hours {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* Стили футера */
+.site-footer {
+    background: #1a1e23;
+    color: #e0e0e0;
+    padding: 2.5rem 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.footer-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 1.5rem;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 2rem;
+}
+
+.footer-section {
+    display: flex;
+    flex-direction: column;
+}
+
+.footer-brand {
+    color: #ffffff;
+    font-size: 1rem;
+    text-decoration: none;
+    font-weight: 500;
+    margin-bottom: 1rem;
+    transition: color 0.3s ease;
+}
+
+    .footer-brand:hover {
+        color: #4dabf7;
+        text-decoration: none;
+    }
+
+.footer-copyright {
+    font-size: 0.85rem;
+    color: #8e8e8e;
+    margin: 0;
+    line-height: 1.5;
+}
+
+.footer-contact {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+}
+
+.footer-contact__icon {
+    color: #4dabf7;
+    font-size: 1.1rem;
+}
+
+.footer-contact__text {
+    font-size: 1rem;
+    font-weight: 500;
+}
+
+.footer-document {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: #e0e0e0;
+    text-decoration: none;
+    font-size: 0.9rem;
+    margin-bottom: 0.75rem;
+    transition: color 0.3s ease;
+}
+
+    .footer-document:hover {
+        color: #4dabf7;
+        text-decoration: none;
+    }
+
+    .footer-document i {
+        font-size: 1rem;
+    }
+
+/* Адаптация для планшетов и десктопов */
+@media (min-width: 768px) {
+    .footer-container {
+        grid-template-columns: repeat(3, 1fr);
+        align-items: flex-start;
+    }
+
+    .footer-section--info {
+        grid-column: 1;
+    }
+
+    .footer-section--contacts {
+        grid-column: 2;
+        align-items: center;
+    }
+
+    .footer-section--documents {
+        grid-column: 3;
+        align-items: flex-end;
+        text-align: right;
+    }
+
+    .footer-document {
+        justify-content: flex-end;
+    }
+}
+
+/* Адаптация для больших экранов */
+@media (min-width: 992px) {
+    .footer-container {
+        padding: 0 2rem;
+    }
 }

@@ -1,0 +1,96 @@
+﻿@{
+    ViewBag.Title = "О нас";
+}
+
+<div class="about-page">
+    <h2 class="about-page__title">О нас</h2>
+
+    <p class="about-page__description">
+        Мы — сервисный центр РУП «Белтелеком» в городе Иваново. Осуществляем диагностику, ремонт и техническое обслуживание телекоммуникационного оборудования.
+        Работаем как с частными, так и с корпоративными клиентами. Наши специалисты помогут вам быстро и качественно решить вопросы, связанные с оборудованием и услугами связи.
+    </p>
+
+    <div class="about-page__image-block">
+        <img src="~/images/service-center.jpg" alt="Здание сервисного центра" class="about-page__image" />
+        <p class="about-page__image-caption">Наш сервисный центр в городе Иваново</p>
+    </div>
+
+    <div class="about-page__divider"></div>
+
+    <h3 class="about-page__subtitle">Наши преимущества</h3>
+    <div class="advantages-grid">
+        <div class="advantage-card">
+            <i class="bi bi-person-check advantage-card__icon"></i>
+            <h5 class="advantage-card__title">Опытные специалисты</h5>
+            <p class="advantage-card__description">Квалифицированные мастера с многолетним опытом работы в сфере телекоммуникаций.</p>
+        </div>
+        <div class="advantage-card">
+            <i class="bi bi-clock-history advantage-card__icon"></i>
+            <h5 class="advantage-card__title">Быстрое обслуживание</h5>
+            <p class="advantage-card__description">Мы ценим ваше время и стараемся выполнять все заказы точно в срок.</p>
+        </div>
+        <div class="advantage-card">
+            <i class="bi bi-geo-alt advantage-card__icon"></i>
+            <h5 class="advantage-card__title">Удобное расположение</h5>
+            <p class="advantage-card__description">Наш центр находится в самом центре города с удобным подъездом и парковкой.</p>
+        </div>
+    </div>
+
+    <div class="about-page__divider"></div>
+
+    <div class="location-block">
+        <h3 class="location-block__title">Наше местоположение</h3>
+        <div class="location-block__map-container">
+            <iframe src="https://yandex.by/map-widget/v1/org/beltelekom/1769417436/?ll=25.544146%2C52.152331&z=17"
+                    class="location-block__map" frameborder="0" allowfullscreen="true">
+            </iframe>
+        </div>
+        <p class="location-block__caption">
+            Сервисный центр РУП «Белтелеком», г. Иваново
+        </p>
+    </div>
+
+    <div class="contacts-block">
+        <h3 class="contacts-block__title">Контактная информация</h3>
+        <div class="contacts-block__info">
+            <ul class="contacts-list">
+                <li class="contacts-list__item">
+                    <strong>Адрес:</strong> Брестская область, г. Иваново, ул. К. Маркса, 11
+                </li>
+                <li class="contacts-list__item">
+                    <strong>Единый справочный номер:</strong> +375 (1652) 95-130
+                </li>
+                <li class="contacts-list__item">
+                    <strong>Факс:</strong> +375 (1652) 22-912
+                </li>
+                <li class="contacts-list__item">
+                    <strong>Email:</strong> spec@ruskbr.brest.beltelecom.by
+                </li>
+            </ul>
+        </div>
+
+        <div class="working-hours">
+            <div class="working-hours__card working-hours__card--individual">
+                <div class="working-hours__header">
+                    Физические лица
+                </div>
+                <div class="working-hours__body">
+                    <p class="working-hours__time"><strong>Время работы:</strong></p>
+                    <p class="working-hours__time">Пн–Пт: 09:00–19:00</p>
+                    <p class="working-hours__time">Сб: 09:00–16:00</p>
+                    <p class="working-hours__time">Вс, праздничные дни — выходной</p>
+                </div>
+            </div>
+            <div class="working-hours__card working-hours__card--business">
+                <div class="working-hours__header">
+                    Юридические лица
+                </div>
+                <div class="working-hours__body">
+                    <p class="working-hours__time"><strong>Время работы:</strong></p>
+                    <p class="working-hours__time">Пн–Пт: 08:30–17:30</p>
+                    <p class="working-hours__time">Сб, Вс, праздничные дни — выходной</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

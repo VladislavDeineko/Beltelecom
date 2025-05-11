@@ -52,6 +52,15 @@
                        data-bs-target="#deleteModal"
                        data-id="@product.Id"
                        data-name="@product.Name">Удалить</a>
+                    <!-- Мини форма увеличения склада -->
+                    <div class="d-inline-flex align-items-center ms-1" style="max-width: 85px;">
+                        <input type="number" class="form-control form-control-sm stock-input px-1" min="1" value="1"
+                               data-product-id="@product.Id" style="width: 40px;" />
+                        <button type="button" class="btn btn-success btn-sm add-stock-btn ms-1"
+                                data-product-id="@product.Id" style="height: 25px;">
+                            +
+                        </button>
+                    </div>
                 </td>
             </tr>
         }
@@ -88,6 +97,14 @@
     </div>
 </div>
 
+<div id="stockToast" class="toast position-fixed bottom-0 end-0 p-3 bg-info text-white"
+     role="alert" aria-live="assertive" aria-atomic="true"
+     data-bs-delay="3000" data-bs-autohide="true">
+    <div class="toast-body">
+        Количество на складе обновлено!
+    </div>
+</div>
+
 @section Scripts {
     <script>
         let deleteProductId = 0;
@@ -119,6 +136,51 @@
                 } else {
                     alert("Ошибка при удалении");
                 }
+            });
+        });
+    </script>
+    <script>
+                document.querySelectorAll('.add-stock-btn').forEach(button => {
+            button.addEventListener('click', function () {
+                const productId = this.dataset.productId;
+                const input = document.querySelector(`.stock-input[data-product-id='${productId}']`);
+                const quantity = parseInt(input.value);
+
+                if (isNaN(quantity) || quantity <= 0) {
+                    alert("Введите корректное количество");
+                    return;
+                }
+
+                fetch(`/Admin/AddStock`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]').value
+                    },
+                    body: JSON.stringify({
+                        productId: parseInt(productId),
+                        amount: quantity
+                    })
+                })
+                .then(response => {
+                    if (!response.ok) throw new Error("Ошибка сервера");
+                    return response.json();
+                })
+                .then(data => {
+                    // Обновляем ячейку "На складе"
+                    const stockCell = document.querySelector(`#product-row-${productId} td:nth-child(5)`);
+                    stockCell.textContent = data.newStock;
+
+                    // Показываем уведомление
+                    const toastEl = new bootstrap.Toast(document.getElementById('stockToast'));
+                    toastEl.show();
+
+                    // Сбрасываем значение
+                    input.value = 1;
+                })
+                .catch(error => {
+                    alert("Не удалось обновить склад: " + error.message);
+                });
             });
         });
     </script>

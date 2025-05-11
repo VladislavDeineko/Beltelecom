@@ -17,45 +17,64 @@ namespace Beltelecom.Controllers
             _context = context;
         }
 
-        public async Task<IActionResult> Index(string category, string brand, string sortOrder)
+        public async Task<IActionResult> Index(string category, string brand, string sortOrder, int page = 1, int pageSize = 8)
         {
-            var products = _context.Products.AsQueryable();
+            var productsQuery = _context.Products
+                .Include(p => p.Category)
+                .Include(p => p.Brand)
+                .AsQueryable();
 
             // Фильтрация по категории
             if (!string.IsNullOrEmpty(category))
             {
-                products = products.Where(p => p.Category.Name == category);
+                productsQuery = productsQuery.Where(p => p.Category.Name == category);
             }
 
             // Фильтрация по бренду
             if (!string.IsNullOrEmpty(brand))
             {
-                products = products.Where(p => p.Brand.Name == brand);
+                productsQuery = productsQuery.Where(p => p.Brand.Name == brand);
             }
 
             // Сортировка
-            products = sortOrder switch
+            productsQuery = sortOrder switch
             {
-                "price_asc" => products.OrderBy(p => p.Price),
-                "price_desc" => products.OrderByDescending(p => p.Price),
-                "name_asc" => products.OrderBy(p => p.Name),
-                "name_desc" => products.OrderByDescending(p => p.Name),
-                _ => products
+                "price_asc" => productsQuery.OrderBy(p => p.Price),
+                "price_desc" => productsQuery.OrderByDescending(p => p.Price),
+                "name_asc" => productsQuery.OrderBy(p => p.Name),
+                "name_desc" => productsQuery.OrderByDescending(p => p.Name),
+                _ => productsQuery
             };
 
-            var categories = await _context.Products.Select(p => p.Category.Name).Distinct().ToListAsync();
+            // Общее количество товаров после фильтрации
+            var totalCount = await productsQuery.CountAsync();
+
+            // Выбор нужной страницы
+            var products = await productsQuery
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
+
+            var categories = await _context.Products
+                .Select(p => p.Category.Name)
+                .Distinct()
+                .ToListAsync();
+
             var brands = await _context.Products
-                    .Select(p => p.Brand.Name)  // Преобразуем в список строк
-                    .Distinct()
-                    .ToListAsync();
+                .Select(p => p.Brand.Name)
+                .Distinct()
+                .ToListAsync();
+
             var viewModel = new CatalogViewModel
             {
-                Products = await products.ToListAsync(),
+                Products = products,
                 Categories = categories,
                 Brands = brands,
                 SelectedCategory = category,
                 SelectedBrand = brand,
-                SortOrder = sortOrder
+                SortOrder = sortOrder,
+                CurrentPage = page,
+                TotalPages = (int)Math.Ceiling((double)totalCount / pageSize)
             };
 
             return View(viewModel);
