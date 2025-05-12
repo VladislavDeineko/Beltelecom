@@ -107,6 +107,10 @@
                                 onclick="setDeleteUrl(@item.Order.Id)">
                             <i class="bi bi-trash"></i>
                         </button>
+                        <a asp-action="DownloadPaymentSchedule" asp-route-id="@item.Order.Id"
+                           class="btn btn-outline-primary btn-sm" title="Скачать график платежей">
+                            <i class="bi bi-download"></i>
+                        </a>
                     </div>
                 </td>
 

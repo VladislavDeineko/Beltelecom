@@ -4,7 +4,7 @@
 }
 
 <div class="container">
-    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+    @* <nav class="navbar navbar-expand-lg navbar-light bg-light">
         <div class="container-fluid">
             <a class="navbar-brand" href="#">Меню</a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
@@ -14,11 +14,11 @@
                 <ul class="navbar-nav">
                     <li class="nav-item"><a class="nav-link" href="#catalog">Каталог</a></li>
                     <li class="nav-item"><a class="nav-link" href="#popular">Популярные товары</a></li>
-                    <li class="nav-item"><a class="nav-link" href="#contact">Контакты</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#contact">Обратная связь</a></li>
                 </ul>
             </div>
         </div>
-    </nav>
+    </nav> *@
 
     <div id="carouselExample" class="carousel slide mt-3" data-bs-ride="carousel">
         <div class="carousel-inner">
@@ -52,19 +52,27 @@
     <partial name="_CategoriesPartial" model="Model.Categories" />
 
     <section id="contact" class="my-5">
+        @if (TempData["Message"] != null)
+        {
+            <div class="alert alert-success">@TempData["Message"]</div>
+        }
+        @if (TempData["Error"] != null)
+        {
+            <div class="alert alert-danger">@TempData["Error"]</div>
+        }
         <h2>Обратная связь</h2>
-        <form>
+        <form method="post" asp-action="SendFeedback">
             <div class="mb-3">
                 <label for="name" class="form-label">Имя</label>
-                <input type="text" class="form-control" id="name">
+                <input type="text" class="form-control" id="name" name="Name" required>
             </div>
             <div class="mb-3">
                 <label for="email" class="form-label">Email</label>
-                <input type="email" class="form-control" id="email">
+                <input type="email" class="form-control" id="email" name="Email" required>
             </div>
             <div class="mb-3">
                 <label for="message" class="form-label">Сообщение</label>
-                <textarea class="form-control" id="message" rows="3"></textarea>
+                <textarea class="form-control" id="message" name="Message" rows="3" required></textarea>
             </div>
             <button type="submit" class="btn btn-primary btn-details">Отправить</button>
         </form>

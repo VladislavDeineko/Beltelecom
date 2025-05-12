@@ -42,6 +42,26 @@ public class HomeController : Controller
         return View(model);
     }
 
+    [HttpPost]
+    public async Task<IActionResult> SendFeedback(FeedbackModel model)
+    {
+        if (ModelState.IsValid)
+        {
+            try
+            {
+                var emailSender = new EmailSender();
+                await emailSender.SendFeedbackToAdminAsync(model.Name, model.Email, model.Message);
+
+                TempData["Message"] = "Ваше сообщение успешно отправлено!";
+                return RedirectToAction("Index");
+            }
+            catch
+            {
+                TempData["Error"] = "Произошла ошибка при отправке сообщения.";
+            }
+        }
+        return View("Contact", model); // Вернуть на страницу контактов, если есть ошибки
+    }
 
     public IActionResult Privacy()
     {
@@ -68,7 +88,6 @@ public class HomeController : Controller
 
         return PartialView("_ProductsPartial", products);
     }
-
     public IActionResult About()
     {
         return View();

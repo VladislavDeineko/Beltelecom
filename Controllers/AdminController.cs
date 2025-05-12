@@ -12,6 +12,11 @@ using DocumentFormat.OpenXml.Drawing.Charts;
 using System.Diagnostics;
 using Azure.Core;
 using Microsoft.AspNetCore.Identity;
+using System.Globalization;
+using DocumentFormat.OpenXml.Packaging;
+using DocumentFormat.OpenXml.Wordprocessing;
+using DocumentFormat.OpenXml;
+using Category = Beltelecom.Models.Category;
 
 namespace Beltelecom.Controllers
 {
@@ -374,6 +379,129 @@ namespace Beltelecom.Controllers
             return RedirectToAction(nameof(IncomingOrders));
         }
 
+        public IActionResult DownloadPaymentSchedule(int id)
+        {
+            var order = _context.Orders
+                .Include(o => o.Product)
+                .FirstOrDefault(o => o.Id == id);
+
+            if (order == null)
+                return NotFound();
+
+            var fileName = $"График_платежей_заказ_{order.Id}.docx";
+            var memoryStream = new MemoryStream();
+
+            using (var wordDoc = WordprocessingDocument.Create(memoryStream, WordprocessingDocumentType.Document, true))
+            {
+                var mainPart = wordDoc.AddMainDocumentPart();
+                mainPart.Document = new Document();
+                var body = new Body();
+
+                // Заголовок
+                var heading = new Paragraph(new Run(new Text($"График платежей по заказу №{order.Id}")))
+                {
+                    ParagraphProperties = new ParagraphProperties(
+                        new Justification() { Val = JustificationValues.Center },
+                        new RunProperties(new RunFonts { Ascii = "Times New Roman" }, new FontSize { Val = "20" }) // 10 pt
+                    )
+                };
+                body.Append(heading, new Paragraph(new Run())); // пустая строка
+
+                // Таблица
+                var table = new Table();
+
+                // Границы
+                var tableProperties = new TableProperties(
+                    new TableBorders(
+                        new TopBorder { Val = BorderValues.Single, Size = 6 },
+                        new BottomBorder { Val = BorderValues.Single, Size = 6 },
+                        new LeftBorder { Val = BorderValues.Single, Size = 6 },
+                        new RightBorder { Val = BorderValues.Single, Size = 6 },
+                        new InsideHorizontalBorder { Val = BorderValues.Single, Size = 6 },
+                        new InsideVerticalBorder { Val = BorderValues.Single, Size = 6 }
+                    )
+                );
+                table.AppendChild(tableProperties);
+
+                // Заголовки
+                var headers = new[]
+                {
+            ("Номер платежа", JustificationValues.Center),
+            ("Срок оплаты", JustificationValues.Center),
+            ("Сумма очередного ежемесячного платежа, BYN", JustificationValues.Center),
+            ("Остаток долга, BYN", JustificationValues.Center)
+        };
+
+                var headerRow = new TableRow();
+                foreach (var (text, align) in headers)
+                {
+                    var cell = new TableCell(
+                        new Paragraph(
+                            new ParagraphProperties(new Justification { Val = align }),
+                            new Run(
+                                new RunProperties(
+                                    new Bold(),
+                                    new RunFonts { Ascii = "Times New Roman" },
+                                    new FontSize { Val = "20" } // 10pt
+                                ),
+                                new Text(text)
+                            )
+                        )
+                    );
+                    headerRow.Append(cell);
+                }
+                table.Append(headerRow);
+
+                // Данные
+                int months = order.InstallmentMonths;
+                decimal total = order.TotalAmount;
+                decimal monthly = Math.Round(total / months, 2);
+                decimal remaining = total;
+
+                for (int i = 0; i < months; i++)
+                {
+                    var date = DateTime.Today.AddMonths(i + 1);
+                    remaining -= monthly;
+                    if (i == months - 1) remaining = 0;
+
+                    var row = new TableRow();
+                    // Номер платежа (по правому краю)
+                    row.Append(CreateCell((i + 1).ToString(), JustificationValues.Right));
+                    // Срок оплаты (по правому краю)
+                    row.Append(CreateCell(date.ToString("dd.MM.yyyy"), JustificationValues.Right));
+                    // Ежемесячный платёж (по центру)
+                    row.Append(CreateCell(monthly.ToString("F2", CultureInfo.InvariantCulture), JustificationValues.Center));
+                    // Остаток (по правому краю)
+                    row.Append(CreateCell(remaining.ToString("F2", CultureInfo.InvariantCulture), JustificationValues.Right));
+
+                    table.Append(row);
+                }
+
+                body.Append(table);
+                mainPart.Document.Append(body);
+                mainPart.Document.Save();
+            }
+
+            memoryStream.Position = 0;
+            return File(memoryStream, "application/vnd.openxmlformats-officedocument.wordprocessingml.document", fileName);
+        }
+
+        // Вспомогательная функция для ячеек
+        private TableCell CreateCell(string text, JustificationValues alignment)
+        {
+            return new TableCell(
+                new Paragraph(
+                    new ParagraphProperties(new Justification { Val = alignment }),
+                    new Run(
+                        new RunProperties(
+                            new RunFonts { Ascii = "Times New Roman" },
+                            new FontSize { Val = "20" }
+                        ),
+                        new Text(text)
+                    )
+                )
+            );
+        }
 
         public async Task<IActionResult> ActiveOrders(string searchString, string sortOrder, int? month, int? year)
         {
