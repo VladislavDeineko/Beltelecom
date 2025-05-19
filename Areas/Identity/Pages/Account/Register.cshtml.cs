@@ -76,7 +76,7 @@ namespace Beltelecom.Areas.Identity.Pages.Account
             /// </summary>
             [Required]
             [EmailAddress]
-            [Display(Name = "Email")]
+            [Display(Name = "Электронная почта")]
             public string Email { get; set; }
 
             /// <summary>
@@ -84,9 +84,9 @@ namespace Beltelecom.Areas.Identity.Pages.Account
             ///     directly from your code. This API may change or be removed in future releases.
             /// </summary>
             [Required]
-            [StringLength(100, ErrorMessage = "The {0} must be at least {2} and at max {1} characters long.", MinimumLength = 6)]
+            [StringLength(100, ErrorMessage = "{0} дожен быть минимум {2} и максимум {1} символов.", MinimumLength = 6)]
             [DataType(DataType.Password)]
-            [Display(Name = "Password")]
+            [Display(Name = "Пароль")]
             public string Password { get; set; }
 
             /// <summary>
@@ -94,8 +94,8 @@ namespace Beltelecom.Areas.Identity.Pages.Account
             ///     directly from your code. This API may change or be removed in future releases.
             /// </summary>
             [DataType(DataType.Password)]
-            [Display(Name = "Confirm password")]
-            [Compare("Password", ErrorMessage = "The password and confirmation password do not match.")]
+            [Display(Name = "Подтвердите пароль")]
+            [Compare("Password", ErrorMessage = "Пароли не совпадают.")]
             public string ConfirmPassword { get; set; }
         }
 
@@ -131,8 +131,24 @@ namespace Beltelecom.Areas.Identity.Pages.Account
                         values: new { area = "Identity", userId = userId, code = code, returnUrl = returnUrl },
                         protocol: Request.Scheme);
 
-                    await _emailSender.SendEmailAsync(Input.Email, "Confirm your email",
-                        $"Please confirm your account by <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicking here</a>.");
+                    await _emailSender.SendEmailAsync(Input.Email, "Подтверждение электронной почты",
+                    $@"
+                    <div style=""font-family: Arial, sans-serif; max-width: 600px; margin: auto; border: 1px solid #e0e0e0; padding: 20px; border-radius: 8px;"">
+                        <h2 style=""color: #2e6c80;"">Добро пожаловать в BeltelecomShop!</h2>
+                        <p>Благодарим вас за регистрацию на нашем сайте.</p>
+                        <p>Пожалуйста, подтвердите ваш адрес электронной почты, перейдя по ссылке ниже:</p>
+                        <p style=""text-align: center; margin: 30px 0;"">
+                            <a href='{HtmlEncoder.Default.Encode(callbackUrl)}' 
+                               style=""background-color: #2e6c80; color: white; padding: 12px 20px; text-decoration: none; border-radius: 5px;"">
+                                Подтвердить email
+                            </a>
+                        </p>
+                        <hr style=""border: none; border-top: 1px solid #ddd; margin: 30px 0;"">
+                        <p style=""font-size: 12px; color: #777;"">
+                            Это письмо было отправлено автоматически с сайта <strong>BeltelecomShop</strong>. 
+                            Если вы не регистрировались у нас, просто проигнорируйте это сообщение.
+                        </p>
+                    </div>");
 
                     if (_userManager.Options.SignIn.RequireConfirmedAccount)
                     {

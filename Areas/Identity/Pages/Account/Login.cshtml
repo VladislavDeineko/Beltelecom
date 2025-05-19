@@ -5,42 +5,39 @@
     ViewData["Title"] = "Вход";
 }
 
-<div class="row">
+<div class="row auth-container">
     <div class="col-md-4">
         <section>
-            <form id="account" method="post">
-                <h2>Войдите в аккаунт</h2>
-                <hr />
-                <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
+            <form id="account" method="post" class="auth-form">
+                <h2 class="auth-title">Войдите в аккаунт</h2>
+                <hr class="auth-divider" />
+                <div asp-validation-summary="ModelOnly" class="text-danger validation-summary" role="alert"></div>
                 <div class="form-floating mb-3">
-                    <input asp-for="Input.Email" class="form-control" autocomplete="username" aria-required="true" placeholder="name@example.com" />
-                    <label asp-for="Input.Email" class="form-label">Электронная почта</label>
-                    <span asp-validation-for="Input.Email" class="text-danger"></span>
+                    <input asp-for="Input.Email" class="form-control auth-input" autocomplete="username" aria-required="true" placeholder="name@example.com" />
+                    <label asp-for="Input.Email" class="form-label auth-label">Электронная почта</label>
+                    <span asp-validation-for="Input.Email" class="text-danger validation-error"></span>
                 </div>
                 <div class="form-floating mb-3">
-                    <input asp-for="Input.Password" class="form-control" autocomplete="current-password" aria-required="true" placeholder="password" />
-                    <label asp-for="Input.Password" class="form-label">Пароль</label>
-                    <span asp-validation-for="Input.Password" class="text-danger"></span>
+                    <input asp-for="Input.Password" class="form-control auth-input" autocomplete="current-password" aria-required="true" placeholder="password" />
+                    <label asp-for="Input.Password" class="form-label auth-label">Пароль</label>
+                    <span asp-validation-for="Input.Password" class="text-danger validation-error"></span>
                 </div>
-                <div class="checkbox mb-3">
-                    <label asp-for="Input.RememberMe" class="form-label">
-                        <input class="form-check-input" asp-for="Input.RememberMe" />
+                <div class="checkbox mb-3 auth-remember">
+                    <label asp-for="Input.RememberMe" class="form-label auth-remember-label">
+                        <input class="form-check-input auth-checkbox" asp-for="Input.RememberMe" />
                         @Html.DisplayNameFor(m => m.Input.RememberMe)
                     </label>
                 </div>
                 <div>
-                    <button id="login-submit" type="submit" class="w-100 btn btn-lg btn-primary">Войти</button>
+                    <button id="login-submit" type="submit" class="w-100 btn btn-lg auth-button">Войти</button>
                 </div>
-                <div>
+                <div class="auth-links">
                     <p>
-                        <a id="forgot-password" asp-page="./ForgotPassword">Забыли пароль?</a>
+                        <a id="forgot-password" asp-page="./ForgotPassword" class="auth-link">Забыли пароль?</a>
                     </p>
                     <p>
-                        <a asp-page="./Register" asp-route-returnUrl="@Model.ReturnUrl">Зарегистрироваться</a>
+                        <a asp-page="./Register" asp-route-returnUrl="@Model.ReturnUrl" class="auth-link">Зарегистрироваться</a>
                     </p>
-@*                     <p>
-                        <a id="resend-confirmation" asp-page="./ResendEmailConfirmation">Resend email confirmation</a>
-                    </p> *@
                 </div>
             </form>
         </section>

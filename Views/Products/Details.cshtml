@@ -37,17 +37,21 @@
     <div class="product-specifications">
         @if (Model.Specifications != null && Model.Specifications.Any())
         {
-            <h3>Характеристики:</h3>
-            @foreach (var group in Model.Specifications
-           .GroupBy(s => s.Group))
+            <h3 class="spec-main-title">Характеристики товара</h3>
+            @foreach (var group in Model.Specifications.GroupBy(s => s.Group))
             {
-                <h4 class="spec-group">@group.Key</h4>
-                <ul class="product-specs">
-                    @foreach (var spec in group)
-                    {
-                        <li><strong>@spec.Name:</strong> @spec.Value</li>
-                    }
-                </ul>
+                <div class="spec-group-container">
+                    <h4 class="spec-group-title">@group.Key</h4>
+                    <div class="spec-grid">
+                        @foreach (var spec in group)
+                        {
+                            <div class="spec-item">
+                                <span class="spec-name">@spec.Name</span>
+                                <span class="spec-value">@spec.Value</span>
+                            </div>
+                        }
+                    </div>
+                </div>
             }
         }
     </div>

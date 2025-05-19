@@ -662,8 +662,27 @@ namespace Beltelecom.Controllers
             var templates = new Dictionary<int, List<(string Name, string Group)>>()
             {
                 { 1, new List<(string, string)> // Телевизоры
-                { ("Диагональ экрана", "Экран"),
-                    ("Ёмкость аккумулятора", "Батарея") } },
+                {
+                    ("Диагональ экрана", "Экран"),
+                    ("Разрешение экрана", "Экран"),
+                    ("Smart TV", "Функционал"),
+                    ("Технология экрана", "Экран"),
+                    ("Частота обновления экрана", "Экран"),
+                    ("Цвет корпуса", "Дизайн"),
+                    ("Мощность аудиосистемы", "Аудио"),
+                    ("Стандарты цифрового телевидения", "Функционал"),
+                    ("Голосовое управление", "Функционал"),
+                    ("Беспроводные интерфейсы", "Подключение"),
+                    ("Входы/выходы", "Подключение"),
+                    ("Размеры без подставки (ШxВxГ)", "Габариты"),
+                    ("Размеры с подставкой (ШxВxГ)", "Габариты"),
+                    ("Вес с подставкой / без подставки", "Габариты"),
+                    ("Крепление", "Конструкция"),
+                    ("Страна производства", "Другое"),
+                    ("Гарантийный срок", "Другое"),
+                    ("Изготовитель", "Другое"),
+                    ("Поставщик", "Другое")
+                } },
                 { 2, new List<(string, string)> // Смартфоны
                     { ("Операционная система", "Основные"),
                     ("Версия ОС на момент выхода", "Основные"),
@@ -757,21 +776,38 @@ namespace Beltelecom.Controllers
             using var workbook = new XLWorkbook();
             var worksheet = workbook.Worksheets.Add("Товары");
 
+            // Заголовки
             worksheet.Cell(1, 1).Value = "Название";
             worksheet.Cell(1, 2).Value = "Категория";
             worksheet.Cell(1, 3).Value = "Бренд";
-            worksheet.Cell(1, 4).Value = "Цена, руб";
-            worksheet.Cell(1, 5).Value = "На складе, шт";
+            worksheet.Cell(1, 4).Value = "Цена, руб.";
+            worksheet.Cell(1, 5).Value = "На складе, шт.";
+            worksheet.Cell(1, 6).Value = "На сумму, руб.";
+
+            decimal totalSum = 0;
 
             for (int i = 0; i < products.Count; i++)
             {
                 var row = i + 2;
-                worksheet.Cell(row, 1).Value = products[i].Name;
-                worksheet.Cell(row, 2).Value = products[i].Category?.Name;
-                worksheet.Cell(row, 3).Value = products[i].Brand?.Name;
-                worksheet.Cell(row, 4).Value = products[i].Price;
-                worksheet.Cell(row, 5).Value = products[i].Stock;
+                var product = products[i];
+                decimal itemSum = product.Price * product.Stock;
+                totalSum += itemSum;
+
+                worksheet.Cell(row, 1).Value = product.Name;
+                worksheet.Cell(row, 2).Value = product.Category?.Name;
+                worksheet.Cell(row, 3).Value = product.Brand?.Name;
+                worksheet.Cell(row, 4).Value = product.Price;
+                worksheet.Cell(row, 5).Value = product.Stock;
+                worksheet.Cell(row, 6).Value = itemSum;
             }
+
+            // Запись итоговой суммы жирным
+            int totalRow = products.Count + 2;
+            worksheet.Cell(totalRow, 6).Value = $"Итого: {totalSum:F2} руб.";
+            worksheet.Cell(totalRow, 6).Style.Font.Bold = true;
+
+            // Автоширина столбцов
+            worksheet.Columns().AdjustToContents();
 
             using var stream = new MemoryStream();
             workbook.SaveAs(stream);
