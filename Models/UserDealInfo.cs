@@ -37,5 +37,10 @@ namespace Beltelecom.Models
 
         [ForeignKey("UserId")]
         public IdentityUser User { get; set; }
+
+        public int? ServicePackageId { get; set; }
+
+        [ForeignKey("ServicePackageId")]
+        public ServicePackage? ServicePackage { get; set; }
     }
 }

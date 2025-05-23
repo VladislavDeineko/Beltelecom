@@ -41,6 +41,5 @@ namespace Beltelecom.Models
         public bool IsCompleted { get; set; } = false; // флаг завершён
 
         public DateTime? CompletedDate { get; set; } // Дата завершения
-
     }
 }

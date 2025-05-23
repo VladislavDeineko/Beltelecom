@@ -22,6 +22,7 @@ public class ApplicationDbContext : IdentityDbContext<IdentityUser>
     public DbSet<Favorite> Favorites { get; set; }
     public DbSet<ProductSpecification> ProductSpecifications { get; set; }
     public DbSet<PopularProduct> PopularProducts { get; set; }
+    public DbSet<ServicePackage> ServicePackages { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

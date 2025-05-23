@@ -27,6 +27,7 @@ namespace Beltelecom.Controllers
         // Личный кабинет (по умолчанию – персональная информация)
         public async Task<IActionResult> Index()
         {
+            ServicePackage? currentUserPackage = null;
             var user = await _userManager.GetUserAsync(User);
             if (user == null) return RedirectToAction("Login", "Account");
 
@@ -51,6 +52,16 @@ namespace Beltelecom.Controllers
                 UserAddress = userAddress ?? new UserAddress(),
                 UserDealInfo = userDealInfo ?? new UserDealInfo()
             };
+
+            if (user != null)
+            {
+                var userDealInfo2 = await _context.UserDealInfos
+                    .Include(u => u.ServicePackage)
+                    .FirstOrDefaultAsync(u => u.UserId == user.Id);
+
+                currentUserPackage = userDealInfo2?.ServicePackage;
+            }
+            ViewBag.CurrentUserPackage = currentUserPackage;
 
             return View(model);
         }

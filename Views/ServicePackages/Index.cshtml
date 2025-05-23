@@ -1,0 +1,126 @@
+﻿@model IEnumerable<ServicePackage>
+@using Microsoft.AspNetCore.Identity
+@inject UserManager<IdentityUser> UserManager
+@inject SignInManager<IdentityUser> SignInManager
+
+@{
+    ViewData["Title"] = "Пакеты услуг";
+    var currentUserPackage = ViewBag.CurrentUserPackage as ServicePackage;
+}
+
+<div class="container mt-4">
+    <div class="mb-3">
+        <h4>Ваш текущий пакет услуг: </h4>
+    </div>
+    <div class="service-container">
+        @if (SignInManager.IsSignedIn(User) && currentUserPackage != null)
+        {
+            <div class="card mb-4 current-service-card">
+                <div class="current-card-header">
+                    <h5 class="service-card-title">@currentUserPackage.Name</h5>
+                </div>
+                <div class="service-details">
+                    <p class="service-value">
+                        <span class="service-label">Интернет:</span>
+                        @currentUserPackage.Internet
+                    </p>
+                    <p class="service-value">
+                        <span class="service-label">Услуги телефонной связи:</span>
+                        @currentUserPackage.PhoneServices
+                    </p>
+                    <p class="service-value">
+                        <span class="service-label">Услуги телевидения:</span>
+                        @currentUserPackage.TVServices
+                    </p>
+                    <p class="service-value video-monitoring">
+                        <span class="service-label">Видеоконтроль:</span>
+                        @(string.IsNullOrEmpty(currentUserPackage.VideoMonitoring) ? "Нет" : currentUserPackage.VideoMonitoring)
+                    </p>
+                </div>
+                <div class="price-box px-4 pb-3">
+                    <p class="h5 current-service-price text-center mb-3">@currentUserPackage.Price руб./мес</p>
+                </div>
+            </div>
+        }
+    </div>
+
+    <div class="mb-3">
+        <h4>Тарифы на пакеты услуг для физических лиц «ЯСНА» для подключения по технологии PON:</h4>
+        <p class="text-muted">В соответствии с действующим законодательством тарифы установлены с налогом на добавленную стоимость.</p>
+    </div>
+
+    <div class="row row-cols-1 row-cols-sm-2 row-cols-md-4 g-4 mb-4">
+        @foreach (var package in Model.Where(p => p.Name.ToLower().Contains("ясна")))
+        {
+            <div class="col">
+                <div class="card service-card h-100 d-flex flex-column">
+                    <div class="card-header">
+                        <h5 class="service-card-title">@package.Name</h5>
+                    </div>
+                    <div class="service-details flex-grow-1">
+                        <p class="service-value">
+                            <span class="service-label">Интернет:</span>
+                            @package.Internet
+                        </p>
+                        <p class="service-value">
+                            <span class="service-label">Услуги телефонной связи:</span>
+                            @package.PhoneServices
+                        </p>
+                        <p class="service-value">
+                            <span class="service-label">Услуги телевидения:</span>
+                            @package.TVServices
+                        </p>
+                        <p class="service-value video-monitoring">
+                            <span class="service-label">Видеоконтроль:</span>
+                            @(string.IsNullOrEmpty(package.VideoMonitoring) ? "Нет" : package.VideoMonitoring)
+                        </p>
+                    </div>
+                    <div class="price-box px-4 pb-3">
+                        <p class="service-price">Цена: @package.Price руб.</p>
+                        <button class="btn btn-custom">Сменить пакет</button>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+
+    <div class="mb-3">
+        <h4>Пакеты для подключения по технологиям xDSL для физических лиц:</h4>
+    </div>
+
+    <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-4 row-center">
+        @foreach (var package in Model.Where(p => p.Name.ToLower().Contains("семейный")))
+        {
+            <div class="col">
+                <div class="card service-card h-100">
+                    <div class="card-header">
+                        <h5 class="service-card-title">@package.Name</h5>
+                    </div>
+                    <div class="service-details">
+                        <!-- Пример для одной карточки -->
+                        <p class="service-value">
+                            <span class="service-label">Интернет:</span>
+                            @package.Internet
+                        </p>
+                        <p class="service-value">
+                            <span class="service-label">Услуги телефонной связи:</span>
+                            @package.PhoneServices
+                        </p>
+                        <p class="service-value">
+                            <span class="service-label">Услуги телевидения:</span>
+                            @package.TVServices
+                        </p>
+                        <p class="service-value video-monitoring">
+                            <span class="service-label">Видеоконтроль:</span>
+                            @(string.IsNullOrEmpty(package.VideoMonitoring) ? "Нет" : package.VideoMonitoring)
+                        </p>
+                    </div>
+                    <div class="price-box px-4 pb-3">
+                        <p class="service-price mt-auto">Цена: @package.Price руб.</p>
+                        <button class="btn btn-custom">Сменить пакет</button>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>

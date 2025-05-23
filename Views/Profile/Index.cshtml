@@ -2,6 +2,7 @@
 
 @{
     ViewData["Title"] = "Личный кабинет";
+    var currentUserPackage = ViewBag.CurrentUserPackage as ServicePackage;
 }
 
 <h2>Личный кабинет</h2>
@@ -17,22 +18,23 @@
         <a class="btn btn-danger mt-3" asp-action="Logout">Выйти</a>
     </div>
 
-    <div class="profile_form">
-        <h3>Личные данные данные</h3>
-        <form asp-action="UpdateDealInfo" method="post">
-            <div class="form-floating mb-3">
-                <input type="text" name="LastName" value="@Model.UserDealInfo?.LastName" class="form-control profile_form_input" id="LastName" />
-                <label for="LastName">Фамилия</label>
-            </div>
-            <div class="form-floating mb-3">
-                <input type="text" name="FirstName" value="@Model.UserDealInfo?.FirstName" class="form-control profile_form_input" id="FirstName" />
-                <label for="FirstName">Имя</label>
-            </div>
-            <div class="form-floating mb-3">
-                <input type="text" name="MiddleName" value="@Model.UserDealInfo?.MiddleName" class="form-control profile_form_input" id="MiddleName" />
-                <label for="MiddleName">Отчество</label>
-            </div>
-            @*             <div class="form-floating mb-3">
+    <div class="info-service">
+        <div class="profile_form">
+            <h3>Личные данные данные</h3>
+            <form asp-action="UpdateDealInfo" method="post">
+                <div class="form-floating mb-3">
+                    <input type="text" name="LastName" value="@Model.UserDealInfo?.LastName" class="form-control profile_form_input" id="LastName" />
+                    <label for="LastName">Фамилия</label>
+                </div>
+                <div class="form-floating mb-3">
+                    <input type="text" name="FirstName" value="@Model.UserDealInfo?.FirstName" class="form-control profile_form_input" id="FirstName" />
+                    <label for="FirstName">Имя</label>
+                </div>
+                <div class="form-floating mb-3">
+                    <input type="text" name="MiddleName" value="@Model.UserDealInfo?.MiddleName" class="form-control profile_form_input" id="MiddleName" />
+                    <label for="MiddleName">Отчество</label>
+                </div>
+                @*             <div class="form-floating mb-3">
                 <input type="text" name="PassportNumber" value="@Model.UserDealInfo?.PassportNumber" class="form-control" id="PassportNumber" />
                 <label for="PassportNumber">Серия и номер паспорта</label>
             </div>
@@ -52,16 +54,46 @@
                 <input type="date" name="PassportExpiryDate" value="@Model.UserDealInfo?.PassportExpiryDate?.ToString("yyyy-MM-dd")" class="form-control" id="PassportExpiryDate" />
                 <label for="PassportExpiryDate">Дата окончания действия</label>
             </div> *@
-            <button type="submit" class="btn btn-primary">Сохранить</button>
-            @if (TempData["SuccessMessageDeal"] != null)
-            {
-                <div class="alert alert-success">@TempData["SuccessMessageDeal"]</div>
-            }
-            @if (TempData["ErrorMessageDeal"] != null)
-            {
-                <div class="alert alert-danger">@TempData["ErrorMessageDeal"]</div>
-            }
-        </form>
+                <button type="submit" class="btn btn-primary">Сохранить</button>
+                @if (TempData["SuccessMessageDeal"] != null)
+                {
+                    <div class="alert alert-success">@TempData["SuccessMessageDeal"]</div>
+                }
+                @if (TempData["ErrorMessageDeal"] != null)
+                {
+                    <div class="alert alert-danger">@TempData["ErrorMessageDeal"]</div>
+                }
+            </form>
+        </div>
+        <a asp-area="" asp-controller="ServicePackages" asp-action="Index">
+            <div class="card mini-service-card mb-3">
+                <h6 class="card-header mini-service-header py-2">Текущий пакет услуг:</h6>
+                <div class="card-body py-2 px-3">
+                    <div class="mini-service-title mb-1">@currentUserPackage.Name</div>
+                    <div class="mini-service-items">
+                        <div class="service-item d-flex justify-content-between">
+                            <span>Интернет:</span>
+                            <span>@currentUserPackage.Internet</span>
+                        </div>
+                        <div class="service-item d-flex justify-content-between">
+                            <span>Услуги телефонной связи:</span>
+                            <div class="service-checkbox @(!string.IsNullOrEmpty(currentUserPackage.PhoneServices) ? "checked" : "")"></div>
+                        </div>
+                        <div class="service-item d-flex justify-content-between">
+                            <span>ТВ:</span>
+                            <span>@currentUserPackage.TVServices</span>
+                        </div>
+                        <div class="service-item d-flex justify-content-between">
+                            <span>Видеоконтроль:</span>
+                            <div class="service-checkbox @(!string.IsNullOrEmpty(currentUserPackage.VideoMonitoring) ? "checked" : "")"></div>
+                        </div>
+                    </div>
+                    <div class="text-center text-success fw-semibold mt-2 small">
+                        @currentUserPackage.Price руб./мес
+                    </div>
+                </div>
+            </div>
+        </a>
     </div>
     <div class="profile_form">
         <h3>Адрес</h3>
