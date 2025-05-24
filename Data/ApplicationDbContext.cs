@@ -23,6 +23,7 @@ public class ApplicationDbContext : IdentityDbContext<IdentityUser>
     public DbSet<ProductSpecification> ProductSpecifications { get; set; }
     public DbSet<PopularProduct> PopularProducts { get; set; }
     public DbSet<ServicePackage> ServicePackages { get; set; }
+    public DbSet<ServicePackageOrder> ServicePackageOrders { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

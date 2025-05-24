@@ -265,6 +265,45 @@ namespace Beltelecom.Migrations
                     b.ToTable("ServicePackages");
                 });
 
+            modelBuilder.Entity("Beltelecom.Models.ServicePackageOrder", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime?>("CompletedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsCompleted")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsConfirmed")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime>("OrderDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<decimal>("PricePerMonth")
+                        .HasColumnType("decimal(10,2)");
+
+                    b.Property<int>("ServicePackageId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ServicePackageId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("ServicePackageOrders");
+                });
+
             modelBuilder.Entity("Beltelecom.Models.UserAddress", b =>
                 {
                     b.Property<int>("Id")
@@ -629,6 +668,25 @@ namespace Beltelecom.Migrations
                         .IsRequired();
 
                     b.Navigation("Product");
+                });
+
+            modelBuilder.Entity("Beltelecom.Models.ServicePackageOrder", b =>
+                {
+                    b.HasOne("Beltelecom.Models.ServicePackage", "ServicePackage")
+                        .WithMany()
+                        .HasForeignKey("ServicePackageId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("ServicePackage");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("Beltelecom.Models.UserAddress", b =>
