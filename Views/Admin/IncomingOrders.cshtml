@@ -63,6 +63,7 @@
     <thead>
         <tr>
             <th>ФИО</th>
+            <th>Тариф</th>
             <th>Телефон</th>
             <th>Товар</th>
             <th>Сумма, руб.</th>
@@ -78,6 +79,7 @@
         {
             <tr>
                 <td>@item.FullName</td>
+                <td>@item.ServicePackage</td>
                 <td>@item.PhoneNumber</td>
                 <td>@item.Order.Product.Name</td>
                 <td>@item.Order.TotalAmount.ToString("0.00") руб.</td>
@@ -113,7 +115,6 @@
                         </a>
                     </div>
                 </td>
-
             </tr>
         }
     </tbody>

@@ -438,7 +438,9 @@ namespace Beltelecom.Controllers
                 .Include(o => o.User)
                 .AsQueryable();
 
-            var userDealInfos = _context.UserDealInfos.ToList();
+            var userDealInfos = _context.UserDealInfos
+                .Include(info => info.ServicePackage)
+                .ToList();
 
             var userFullNames = userDealInfos.ToDictionary(
                 u => u.UserId,
@@ -471,6 +473,7 @@ namespace Beltelecom.Controllers
                 FullName = userFullNames.TryGetValue(o.UserId, out var fullName)
                     ? fullName
                     : "Нет данных",
+                ServicePackage = userDealInfos.FirstOrDefault(u => u.UserId == o.UserId)?.ServicePackage.Name ?? "-",
                 PhoneNumber = userDealInfos.FirstOrDefault(u => u.UserId == o.UserId)?.PhoneNumber ?? "Не указан"
             }).ToList();
 
@@ -981,7 +984,14 @@ namespace Beltelecom.Controllers
                 .Include(o => o.User)
                 .AsQueryable();
 
-            var userDealInfos = _context.UserDealInfos.ToList();
+            var userDealInfos = _context.UserDealInfos
+                .Include(info => info.ServicePackage)
+                .ToList();
+
+            var packages = userDealInfos.ToDictionary(
+                u => u.UserId,
+                u => $"{u.ServicePackage.Name}"
+            );
 
             var userFullNames = userDealInfos.ToDictionary(
                 u => u.UserId,
@@ -1005,26 +1015,29 @@ namespace Beltelecom.Controllers
             var worksheet = workbook.Worksheets.Add("Входящие заказы");
 
             worksheet.Cell(1, 1).Value = "ФИО";
-            worksheet.Cell(1, 2).Value = "Товар";
-            worksheet.Cell(1, 3).Value = "Сумма, руб";
-            worksheet.Cell(1, 4).Value = "Дата заказа";
-            worksheet.Cell(1, 5).Value = "Рассрочка, мес";
-            worksheet.Cell(1, 6).Value = "Настройка";
+            worksheet.Cell(1, 2).Value = "Тариф";
+            worksheet.Cell(1, 3).Value = "Товар";
+            worksheet.Cell(1, 4).Value = "Сумма, руб";
+            worksheet.Cell(1, 5).Value = "Дата заказа";
+            worksheet.Cell(1, 6).Value = "Рассрочка, мес";
+            worksheet.Cell(1, 7).Value = "Настройка";
 
             for (int i = 0; i < orders.Count; i++)
             {
                 var row = i + 2;
                 var order = orders[i];
                 var fullName = userFullNames.TryGetValue(order.UserId, out var name) ? name : "Нет данных";
+                var package = packages.TryGetValue(order.UserId, out var pckg) ? pckg : "Нет данных";
 
                 worksheet.Cell(row, 1).Value = fullName;
-                worksheet.Cell(row, 2).Value = order.Product?.Name ?? "Неизвестно";
-                worksheet.Cell(row, 3).Value = order.TotalAmount;
-                worksheet.Cell(row, 4).Value = order.OrderDate.ToString("dd.MM.yyyy");
-                worksheet.Cell(row, 5).Value = order.InstallmentMonths > 0
+                worksheet.Cell(row, 2).Value = package;
+                worksheet.Cell(row, 3).Value = order.Product?.Name ?? "Неизвестно";
+                worksheet.Cell(row, 4).Value = order.TotalAmount;
+                worksheet.Cell(row, 5).Value = order.OrderDate.ToString("dd.MM.yyyy");
+                worksheet.Cell(row, 6).Value = order.InstallmentMonths > 0
                     ? $"{order.InstallmentMonths} мес."
                     : "-";
-                worksheet.Cell(row, 6).Value = order.RequiresSetup ? "Да" : "Нет";
+                worksheet.Cell(row, 7).Value = order.RequiresSetup ? "Да" : "Нет";
             }
 
             using var stream = new MemoryStream();
@@ -1916,7 +1929,9 @@ namespace Beltelecom.Controllers
                 {
                     u.Id,
                     u.Email,
-                    DealInfo = _context.UserDealInfos.FirstOrDefault(info => info.UserId == u.Id),
+                    DealInfo = _context.UserDealInfos
+                        .Include(info => info.ServicePackage)
+                        .FirstOrDefault(info => info.UserId == u.Id),
                     Address = _context.UserAddresses.FirstOrDefault(addr => addr.UserId == u.Id),
                     OrdersCount = _context.Orders.Count(o => o.UserId == u.Id),
                     Role = _context.UserRoles
@@ -1945,11 +1960,12 @@ namespace Beltelecom.Controllers
             var worksheet = workbook.Worksheets.Add("Пользователи");
 
             worksheet.Cell(1, 1).Value = "ФИО";
-            worksheet.Cell(1, 2).Value = "Email";
-            worksheet.Cell(1, 3).Value = "Телефон";
-            worksheet.Cell(1, 4).Value = "Адрес";
-            worksheet.Cell(1, 5).Value = "Кол-во заказов";
-            worksheet.Cell(1, 6).Value = "Роль";
+            worksheet.Cell(1, 2).Value = "Тариф";
+            worksheet.Cell(1, 3).Value = "Email";
+            worksheet.Cell(1, 4).Value = "Телефон";
+            worksheet.Cell(1, 5).Value = "Адрес";
+            worksheet.Cell(1, 6).Value = "Кол-во заказов";
+            worksheet.Cell(1, 7).Value = "Роль";
 
             int row = 2;
             foreach (var u in users)
@@ -1961,11 +1977,12 @@ namespace Beltelecom.Controllers
                     : "Не указано";
 
                 worksheet.Cell(row, 1).Value = fullName;
-                worksheet.Cell(row, 2).Value = u.Email;
-                worksheet.Cell(row, 3).Value = u.DealInfo?.PhoneNumber;
-                worksheet.Cell(row, 4).Value = address;
-                worksheet.Cell(row, 5).Value = u.OrdersCount;
-                worksheet.Cell(row, 6).Value = u.Role switch
+                worksheet.Cell(row, 2).Value = u.DealInfo.ServicePackage.Name;
+                worksheet.Cell(row, 3).Value = u.Email;
+                worksheet.Cell(row, 4).Value = u.DealInfo?.PhoneNumber;
+                worksheet.Cell(row, 5).Value = address;
+                worksheet.Cell(row, 6).Value = u.OrdersCount;
+                worksheet.Cell(row, 7).Value = u.Role switch
                 {
                     "Admin" => "Админ",
                     "User" => "Пользователь",

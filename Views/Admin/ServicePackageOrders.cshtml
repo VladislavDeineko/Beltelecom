@@ -83,12 +83,14 @@
                     <a href="@Url.Action("MarkAsCompleted", "Admin", new { id = item.Order.Id })" class="btn btn-success btn-sm">
                         Завершить
                     </a>
-                    <a href="#" class="btn btn-danger btn-sm"
+                    <button type="button" href="#" class="btn btn-outline-danger btn-sm"
                        data-bs-toggle="modal"
                        data-bs-target="#deleteModal"
                        data-id="@item.Order.Id"
                        data-client="@item.UserDealInfo.LastName @item.UserDealInfo.FirstName @item.UserDealInfo.MiddleName"
-                       data-name="@item.Order.ServicePackage?.Name">Удалить</a>
+                            data-name="@item.Order.ServicePackage?.Name">
+                        <i class="bi bi-trash"></i>
+                    </button>
                 </td>
             </tr>
         }

@@ -46,11 +46,13 @@
                 <td>
                     <a href="@Url.Action("Edit", "Admin", new { id = product.Id })" class="btn btn-warning btn-sm">Редактировать</a>
 
-                    <a href="#" class="btn btn-danger btn-sm"
+                    <button type="button" href="#" class="btn btn-outline-danger btn-sm"
                        data-bs-toggle="modal"
                        data-bs-target="#deleteModal"
                        data-id="@product.Id"
-                       data-name="@product.Name">Удалить</a>
+                            data-name="@product.Name">
+                        <i class="bi bi-trash"></i>
+                    </button>
                     <!-- Мини форма увеличения количества -->
                     <div class="d-inline-flex align-items-center ms-1" style="max-width: 85px;">
                         <input type="number" class="form-control form-control-sm stock-input px-1" min="1" value="1"
