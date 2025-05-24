@@ -37,6 +37,7 @@ namespace Beltelecom.Controllers
             return View();
         }
 
+
         // Страница для просмотра всех товаров
         public IActionResult ProductList(string? search)
         {
@@ -57,7 +58,126 @@ namespace Beltelecom.Controllers
             return View(products.ToList());
         }
 
+        public async Task<IActionResult> ServicePackageOrders(string? search)
+        {
+            var ordersQuery = _context.ServicePackageOrders
+                .Include(o => o.ServicePackage)
+                .Include(o => o.User)
+                .AsQueryable();
 
+            var allUserInfos = await _context.UserDealInfos
+                .Include(u => u.ServicePackage)
+                .ToListAsync();
+
+            if (!string.IsNullOrEmpty(search))
+            {
+                search = search.ToLower();
+
+                var matchingUserIds = allUserInfos
+                    .Where(u =>
+                        (!string.IsNullOrEmpty(u.FirstName) && u.FirstName.ToLower().Contains(search)) ||
+                        (!string.IsNullOrEmpty(u.LastName) && u.LastName.ToLower().Contains(search)) ||
+                        (!string.IsNullOrEmpty(u.MiddleName) && u.MiddleName.ToLower().Contains(search)) ||
+                        (!string.IsNullOrEmpty(u.PhoneNumber) && u.PhoneNumber.ToLower().Contains(search)))
+                    .Select(u => u.UserId)
+                    .ToList();
+
+                ordersQuery = ordersQuery.Where(o => matchingUserIds.Contains(o.UserId));
+            }
+
+            var orders = await ordersQuery
+                .OrderBy(o => o.IsCompleted)
+                .ThenByDescending(o => o.IsConfirmed)
+                .ThenByDescending(o => o.OrderDate)
+                .ToListAsync();
+
+            var userIds = orders.Select(o => o.UserId).Distinct().ToList();
+            var userInfos = allUserInfos.Where(u => userIds.Contains(u.UserId)).ToList();
+
+            var filteredOrders = new List<ServicePackageOrder>();
+
+            foreach (var order in orders)
+            {
+                var userDealInfo = userInfos.FirstOrDefault(ui => ui.UserId == order.UserId);
+                if (userDealInfo != null)
+                {
+                    if (userDealInfo.ServicePackageId != order.ServicePackageId || order.IsCompleted)
+                    {
+                        if (!filteredOrders.Any(o => o.UserId == order.UserId && o.ServicePackageId == order.ServicePackageId))
+                        {
+                            filteredOrders.Add(order);
+                        }
+                    }
+                }
+            }
+
+            var result = filteredOrders.Select(order => new ServicePackageOrderViewModel
+            {
+                Order = order,
+                UserDealInfo = userInfos.FirstOrDefault(ui => ui.UserId == order.UserId)
+            }).ToList();
+
+            return View(result);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> MarkAsCompleted(int id)
+        {
+            var order = await _context.ServicePackageOrders
+                .Include(o => o.User)
+                .FirstOrDefaultAsync(o => o.Id == id);
+
+            if (order == null)
+            {
+                return NotFound();
+            }
+
+            if (!order.IsCompleted)
+            {
+                order.IsCompleted = true;
+                order.CompletedDate = DateTime.UtcNow;
+
+                // Обновляем текущий пакет пользователя
+                var userDealInfo = await _context.UserDealInfos
+                    .FirstOrDefaultAsync(udi => udi.UserId == order.UserId);
+
+                if (userDealInfo != null && order.ServicePackageId != null)
+                {
+                    userDealInfo.ServicePackageId = order.ServicePackageId;
+                    _context.UserDealInfos.Update(userDealInfo);
+                }
+
+                // Удаляем все другие незавершённые заявки от этого пользователя
+                var otherOrders = await _context.ServicePackageOrders
+                    .Where(o => o.UserId == order.UserId && o.Id != order.Id && !o.IsCompleted)
+                    .ToListAsync();
+
+                _context.ServicePackageOrders.RemoveRange(otherOrders);
+
+                _context.ServicePackageOrders.Update(order);
+
+                await _context.SaveChangesAsync();
+            }
+
+            return RedirectToAction(nameof(ServicePackageOrders));
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteServiceOrder(int id)
+        {
+            var order = await _context.ServicePackageOrders.FindAsync(id);
+
+            if (order == null)
+            {
+                return NotFound();
+            }
+
+            _context.ServicePackageOrders.Remove(order);
+            await _context.SaveChangesAsync();
+
+            return Ok(); // Возвращаем 200 OK, чтобы JS мог перезагрузить страницу
+        }
 
         // Страница для добавления нового товара
         public IActionResult Create()
@@ -559,9 +679,6 @@ namespace Beltelecom.Controllers
 
             return View(viewModel);
         }
-
-
-
 
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -1713,6 +1830,7 @@ namespace Beltelecom.Controllers
 
             var dealInfos = await _context.UserDealInfos
                 .Where(info => userIds.Contains(info.UserId))
+                .Include(info => info.ServicePackage)
                 .ToListAsync();
 
             var addresses = await _context.UserAddresses
@@ -1746,6 +1864,7 @@ namespace Beltelecom.Controllers
                         : "Не указано",
                     Email = u.Email,
                     PhoneNumber = dealInfo?.PhoneNumber,
+                    ServicePackage = dealInfo.ServicePackage.Name,
                     Address = address != null
                         ? $"{address.Region}, {address.City}, {address.Street}, д.{address.House}" +
                           (string.IsNullOrWhiteSpace(address.Apartment) ? "" : $", кв.{address.Apartment}")

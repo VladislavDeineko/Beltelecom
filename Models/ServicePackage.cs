@@ -10,13 +10,9 @@ namespace Beltelecom.Models
 
         [Required]
         public string Name { get; set; } // Название пакета
-
         public string? Internet { get; set; }
-
         public string? PhoneServices { get; set; }
-
         public string? TVServices { get; set; }
-
         public string? VideoMonitoring { get; set; }
 
         [Column(TypeName = "decimal(10,2)")]
